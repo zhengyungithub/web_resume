@@ -1,7 +1,5 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: '只支持 POST 请求' });
@@ -9,6 +7,12 @@ export default async function handler(req, res) {
 
   try {
     const { name, email, subject, message } = req.body;
+
+    console.log("接收到表单数据:", { name, email, subject, message });
+    console.log("Resend API Key:", process.env.RESEND_API_KEY ? "已配置" : "未配置");
+
+    // 在函数内部创建Resend实例，确保环境变量已加载
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const data = await resend.emails.send({
       from: '网站留言 <contact@zhengyun.online>', // ✅ 你的自定义域名邮箱
@@ -24,9 +28,11 @@ export default async function handler(req, res) {
       `,
     });
 
+    console.log("邮件发送成功:", data);
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error("发送邮件失败:", error);
-    return res.status(500).json({ error: error.message });
+    console.error("错误详情:", error.response ? error.response.data : error);
+    return res.status(500).json({ error: error.message, details: error.response ? error.response.data : null });
   }
 }
