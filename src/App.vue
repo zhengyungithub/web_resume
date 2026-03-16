@@ -785,10 +785,9 @@ const submitVisitorForm = async () => {
   visitorStatus.value = '';
 
   try {
-    const targetUrl = new URL(visitorFormEndpoint, window.location.origin);
-    const isFormspree = /(^|\.)formspree\.io$/i.test(targetUrl.hostname);
+    const isFormspree = /(^|\.)formspree\.io$/i.test(visitorFormEndpoint);
 
-    const res = await fetch(targetUrl.toString(), {
+    const res = await fetch(visitorFormEndpoint, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
