@@ -23,20 +23,34 @@
       <div class="absolute inset-0 bg-gradient-to-b from-zen-green-50 to-white -z-10"></div>
       <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
         <div class="space-y-6 animate-fade-in-up">
-          <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight">
-            <span class="block">你好，我是 <span class="text-zen-green-600">{{ data.profile.name }}</span></span>
-            <span class="text-2xl md:text-3xl text-zen-green-200 font-bold tracking-widest uppercase block mt-2 w-full text-center">ZHENGYUN</span>
+          <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight relative overflow-visible">
+            <!-- 背景大字 -->
+            <span class="absolute -top-12 md:-top-16 left-1/2 -translate-x-[40%] text-7xl md:text-8xl lg:text-9xl font-black text-zen-green-200/70 tracking-wider uppercase italic select-none pointer-events-none whitespace-nowrap scale-110">ZHENGYUN</span>
+            <!-- 主标题 -->
+            <span class="relative block pt-4">你好，我是 <span class="text-zen-green-600">{{ data.profile.name }}</span></span>
           </h1>
-          <p class="text-lg text-gray-600 leading-relaxed max-w-lg">
-            {{ data.profile.bio.split('。')[0] }}。
-          </p>
-          <div class="flex gap-4 pt-4">
-            <a href="#projects" class="px-8 py-3 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-full shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-1">
-              查看作品
-            </a>
-            <a href="#contact" class="px-8 py-3 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-full border border-gray-200 shadow-sm transition-all transform hover:-translate-y-1">
-              联系我
-            </a>
+          <p class="text-lg text-gray-600 leading-relaxed max-w-lg min-h-[28px]"></p>
+<!--           AI Assistant Preview-->
+          <div class="flex items-center gap-4 pt-4">
+            <div class="relative flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-full pl-2 pr-5 py-2 border border-zen-green-100 shadow-sm hover:shadow-lg hover:shadow-zen-green-100/50 transition-all cursor-pointer group animate-pulse-slow" @click="openAiAssistant">
+              <!-- 装饰性光晕 -->
+              <div class="absolute -inset-0.5 bg-gradient-to-r from-zen-green-200/50 via-zen-green-300/30 to-zen-green-200/50 rounded-full blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <!-- 在线状态指示器 -->
+              <div class="absolute top-1 left-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white shadow-sm z-10">
+                <span class="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75"></span>
+              </div>
+              <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-zen-green-200 group-hover:border-zen-green-400 transition-colors group-hover:scale-105 transform duration-300">
+                <img src="/阿筠.png" alt="阿筠" class="w-full h-full object-cover">
+              </div>
+              <div class="relative flex flex-col">
+                <span class="text-sm font-medium text-gray-800 group-hover:text-zen-green-600 transition-colors">和阿筠聊聊</span>
+                <span class="text-xs text-gray-500 flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 bg-zen-green-400 rounded-full"></span>
+                  点击开始对话
+                </span>
+              </div>
+              <i class="fas fa-comment-dots text-zen-green-400 group-hover:text-zen-green-600 transition-colors ml-1 group-hover:scale-110 transform"></i>
+            </div>
           </div>
         </div>
         <div class="relative flex justify-center md:justify-end animate-fade-in">
@@ -78,7 +92,7 @@
         <div class="flex justify-between items-end mb-12">
           <div>
             <h2 class="text-3xl font-bold text-gray-900">关于我</h2>
-            <div class="h-1 w-20 bg-zen-green-500 mt-2 rounded-full"></div>
+            <div class="h-1.5 w-24 bg-gradient-to-r from-zen-green-400 to-zen-green-600 mt-3 rounded-full opacity-80"></div>
           </div>
           <button v-if="isEditMode" @click="openAddModal('about')" class="w-10 h-10 rounded-full bg-zen-green-100 text-zen-green-600 hover:bg-zen-green-600 hover:text-white flex items-center justify-center transition-all shadow-sm group-hover:opacity-100 opacity-0 transform translate-y-2 group-hover:translate-y-0" title="添加经历">
             <i class="fas fa-plus"></i>
@@ -91,40 +105,46 @@
               <!-- 个人简介已移除 -->
             </div>
             <!-- Education -->
-            <div class="bg-zen-green-50 rounded-2xl p-8 border border-zen-green-100 relative group/card hover:shadow-lg transition-all duration-300">
+            <div class="bg-gradient-to-br from-white to-zen-green-50 rounded-[2rem] p-8 border border-zen-green-100/60 shadow-md relative group/card hover:shadow-xl hover:to-zen-green-100 transition-all duration-500 hover:-translate-y-1">
               <button v-if="isEditMode" @click="openAddModal('education')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white text-zen-green-500 hover:bg-zen-green-500 hover:text-white flex items-center justify-center transition-all shadow-sm opacity-0 group-hover/card:opacity-100" title="添加教育经历">
                 <i class="fas fa-plus text-xs"></i>
               </button>
-              <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <h3 id="education" class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                 <i class="fas fa-graduation-cap text-zen-green-500"></i> 教育背景
                 <button @click="openTranscriptPreview" class="ml-auto px-3 py-1 text-sm rounded-full bg-zen-green-100 text-zen-green-700 hover:bg-zen-green-600 hover:text-white transition-all">
                   查看成绩单
                 </button>
               </h3>
               <div v-for="edu in data.education" :key="edu.id" class="mb-6 last:mb-0 border-l-2 border-zen-green-200 pl-4 ml-1 relative">
-                <div class="absolute -left-[21px] top-1 w-3 h-3 bg-zen-green-500 rounded-full ring-4 ring-white"></div>
-                <div class="flex justify-between items-start flex-wrap gap-2 mb-1">
+                <div class="absolute -left-[21px] top-1 w-3 h-3 bg-zen-green-500 rounded-full ring-4 ring-zen-green-50"></div>
+                <div class="flex justify-between items-start flex-wrap gap-2 mb-2">
                   <h4 class="font-semibold text-lg text-gray-800">{{ edu.school }}</h4>
-                  <span class="text-sm text-zen-green-600 font-medium bg-white px-2 py-0.5 rounded-full shadow-sm">{{ edu.period }}</span>
+                  <span class="text-sm text-zen-green-600 font-medium bg-zen-green-100/80 px-3 py-0.5 rounded-full shadow-sm">
+                    {{ edu.period }}
+                  </span>
                 </div>
-                <p class="text-gray-600 mb-2">{{ edu.degree }} · {{ edu.major }}</p>
-                <p class="text-sm text-gray-500 whitespace-pre-line">{{ edu.details }}</p>
+                <p class="text-gray-600 mb-3">{{ edu.degree }} · {{ edu.major }}</p>
+                <p class="text-sm text-gray-500 whitespace-pre-line leading-relaxed">
+                  {{ edu.details }}
+                </p>
               </div>
             </div>
           </div>
           <div class="space-y-6">
             <!-- Work Experience (Short) -->
-            <div class="bg-white rounded-2xl p-8 border border-zen-green-100 shadow-sm relative group/work hover:shadow-md transition-all min-h-[280px]">
-              <button v-if="isEditMode" @click="openAddModal('work')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-zen-green-50 text-zen-green-500 hover:bg-zen-green-500 hover:text-white flex items-center justify-center transition-all shadow-sm opacity-0 group-hover/work:opacity-100" title="添加工作经历">
+            <div class="bg-gradient-to-br from-white to-zen-green-50/20 rounded-[2rem] pt-8 pb-8 px-8 border border-zen-green-100/60 shadow-md relative group/work hover:shadow-xl hover:to-zen-green-50/60 transition-all duration-500 min-h-[280px] hover:-translate-y-1">
+              <button v-if="isEditMode" @click="openAddModal('work')" class="absolute top-3 right-4 w-8 h-8 rounded-full bg-zen-green-50 text-zen-green-500 hover:bg-zen-green-500 hover:text-white flex items-center justify-center transition-all shadow-sm opacity-0 group-hover/work:opacity-100" title="添加工作经历">
                 <i class="fas fa-plus text-xs"></i>
               </button>
-              <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <h3 id="work" class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
                 <i class="fas fa-briefcase text-zen-green-500"></i> 实习经历
               </h3>
               <div v-for="job in data.work" :key="job.id" class="mb-4 last:mb-0">
                 <h4 class="font-semibold text-gray-800">{{ job.company }}</h4>
                 <p class="text-sm text-zen-green-600 mb-1">{{ job.role }} | {{ job.period }}</p>
-                <p class="text-sm text-gray-500">{{ job.description }}</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                  <li v-for="(item, index) in job.description.split('\n')" :key="index" class="leading-relaxed" v-html="item.replace(/(vibe coding|AI 智能体)/g, '<strong class=\'font-medium text-gray-700\'>$1</strong>')"></li>
+                </ul>
               </div>
             </div>
           </div>
@@ -138,7 +158,7 @@
       </div>
     </div>
     
-    <div v-if="showTranscriptZoom" class="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center p-6" @click="closeTranscriptZoom">
+    <div v-if="showTranscriptZoom" class="fixed inset-0 z-[60] bg-zen-green-900/20 backdrop-blur-sm flex items-center justify-center p-6" @click="closeTranscriptZoom">
       <div class="bg-white rounded-2xl shadow-2xl p-4 max-w-[90vw] max-h-[90vh]" @click.stop>
         <div class="overflow-auto max-w-[85vw] max-h-[80vh] rounded-lg cursor-move" @mousemove="panTranscriptOnMove">
           <img :src="transcriptImage" alt="成绩单" class="max-w-none w-auto h-auto" loading="lazy" decoding="async">
@@ -152,7 +172,7 @@
         <div class="flex justify-between items-end mb-12">
           <div>
             <h2 class="text-3xl font-bold text-gray-900">项目经历</h2>
-            <div class="h-1 w-20 bg-zen-green-500 mt-2 rounded-full"></div>
+            <div class="h-1.5 w-24 bg-gradient-to-r from-zen-green-400 to-zen-green-600 mt-3 rounded-full opacity-80"></div>
           </div>
           <button v-if="isEditMode" @click="openAddModal('project')" class="px-4 py-2 bg-zen-green-600 hover:bg-zen-green-700 text-white rounded-full flex items-center gap-2 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
             <i class="fas fa-plus"></i>
@@ -161,8 +181,8 @@
         </div>
 
         <div class="grid md:grid-cols-2 gap-8">
-          <div v-for="project in data.projects" :key="project.id" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
-            <div class="h-48 bg-zen-green-100 relative overflow-hidden">
+          <div v-for="project in data.projects" :key="project.id" class="bg-gradient-to-br from-white to-zen-green-50/20 rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-zen-green-100/50 group">
+            <div class="h-48 bg-zen-green-100/30 relative overflow-hidden">
               <!-- Project image -->
               <img v-if="project.image" :src="project.image" :alt="project.title" class="w-full h-full object-cover" loading="lazy" decoding="async">
               <div v-else class="absolute inset-0 flex items-center justify-center text-zen-green-300">
@@ -182,10 +202,48 @@
               <p class="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-4 whitespace-pre-line">
                 {{ project.description }}
               </p>
-              <div class="flex flex-wrap gap-2">
-                <span class="px-3 py-1 bg-zen-green-50 text-zen-green-700 text-xs font-medium rounded-full border border-zen-green-100">Vue 3</span>
-                <span class="px-3 py-1 bg-zen-green-50 text-zen-green-700 text-xs font-medium rounded-full border border-zen-green-100">Tailwind</span>
+
+              <div class="flex flex-wrap gap-3">
+                <button @click="openDocumentModal('需求文档', project.title)" class="px-4 py-2 bg-zen-green-50 text-zen-green-700 font-medium rounded-lg border border-zen-green-100 hover:bg-zen-green-100 transition-all text-sm flex items-center gap-2">
+                  <i class="fas fa-file-alt"></i>
+                  <span>需求文档</span>
+                </button>
+                <button @click="openDocumentModal('产品设计文档', project.title)" class="px-4 py-2 bg-zen-green-50 text-zen-green-700 font-medium rounded-lg border border-zen-green-100 hover:bg-zen-green-100 transition-all text-sm flex items-center gap-2">
+                  <i class="fas fa-pen-fancy"></i>
+                  <span>产品设计文档</span>
+                </button>
               </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="pt-4 pb-12 bg-zen-green-50 relative">
+      <div class="container mx-auto px-6">
+        <div class="flex justify-between items-end mb-8">
+          <div>
+            <h2 class="text-3xl font-bold text-gray-900">作品集</h2>
+            <div class="h-1.5 w-24 bg-gradient-to-r from-zen-green-400 to-zen-green-600 mt-3 rounded-full opacity-80"></div>
+          </div>
+        </div>
+
+        <h3 class="text-2xl font-bold text-gray-900 mb-6">原型作品集</h3>
+        <div class="grid md:grid-cols-2 gap-8">
+          <div v-for="item in data.portfolio" :key="item.id" class="bg-gradient-to-br from-white to-zen-green-50/20 rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-zen-green-100/50 group">
+            <div class="p-8">
+              <div class="flex justify-between items-start mb-4">
+                <div>
+                  <h4 class="text-xl font-bold text-gray-900 group-hover:text-zen-green-600 transition-colors">{{ item.title }}</h4>
+                  <p class="text-gray-600 text-sm leading-relaxed mt-2">{{ item.description }}</p>
+                </div>
+              </div>
+              <a :href="item.url" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-full shadow-md transition-all transform hover:-translate-y-0.5">
+                <i class="fas fa-external-link-alt"></i>
+                <span>访问链接</span>
+              </a>
             </div>
           </div>
         </div>
@@ -198,8 +256,8 @@
         <div class="mb-10">
           <div class="flex justify-between items-end mb-6">
             <div>
-              <h2 class="text-3xl font-bold text-gray-900">证书</h2>
-              <div class="h-1 w-20 bg-zen-green-500 mt-2 rounded-full"></div>
+              <h2 id="certificates" class="text-3xl font-bold text-gray-900">证书</h2>
+              <div class="h-1.5 w-24 bg-gradient-to-r from-zen-green-400 to-zen-green-600 mt-3 rounded-full opacity-80"></div>
             </div>
             <div v-if="isEditMode" class="flex gap-2">
               <button @click="openAddModal('certificate')" class="w-10 h-10 rounded-full bg-zen-green-100 text-zen-green-600 hover:bg-zen-green-600 hover:text-white flex items-center justify-center transition-all shadow-sm group-hover:opacity-100 opacity-0 transform translate-y-2 group-hover:translate-y-0" title="添加证书">
@@ -210,7 +268,7 @@
               </button>
             </div>
           </div>
-          <div class="bg-zen-green-50 rounded-3xl p-8 border border-zen-green-100">
+          <div class="bg-gradient-to-br from-zen-green-50/50 to-white rounded-[2.5rem] p-8 border border-zen-green-100/50 shadow-inner">
             <div class="flex flex-wrap gap-3">
               <div v-for="(cert, index) in data.certificates" :key="index" 
                    class="px-4 py-2 bg-white text-gray-700 rounded-lg shadow-sm hover:shadow-md hover:text-zen-green-600 transition-all cursor-default border border-gray-100 relative"
@@ -237,8 +295,8 @@
         <div class="mb-6">
           <div class="flex justify-between items-end mb-6">
             <div>
-              <h2 class="text-3xl font-bold text-gray-900">技能</h2>
-              <div class="h-1 w-20 bg-zen-green-500 mt-2 rounded-full"></div>
+              <h2 id="skills-list" class="text-3xl font-bold text-gray-900">技能</h2>
+              <div class="h-1.5 w-24 bg-gradient-to-r from-zen-green-400 to-zen-green-600 mt-3 rounded-full opacity-80"></div>
             </div>
             <div v-if="isEditMode" class="flex gap-2">
               <button @click="openAddModal('skill')" class="w-10 h-10 rounded-full bg-zen-green-100 text-zen-green-600 hover:bg-zen-green-600 hover:text-white flex items-center justify-center transition-all shadow-sm group-hover:opacity-100 opacity-0 transform translate-y-2 group-hover:translate-y-0" title="添加技能">
@@ -249,7 +307,7 @@
               </button>
             </div>
           </div>
-          <div class="bg-zen-green-50 rounded-3xl p-8 border border-zen-green-100">
+          <div class="bg-gradient-to-br from-zen-green-50/50 to-white rounded-[2.5rem] p-8 border border-zen-green-100/50 shadow-inner">
             <div class="flex flex-wrap gap-4">
               <div v-for="(skill, index) in normalizedSkills" :key="skill.id || skill.name || index" class="bg-white rounded-xl shadow-sm border border-gray-100 px-3 py-1.5 hover:shadow-md transition-all relative w-fit max-w-full overflow-hidden" :class="isEditMode ? 'pr-14' : ''">
                 <div class="text-gray-800 font-medium truncate">{{ skill.name }}</div>
@@ -276,7 +334,7 @@
         <div v-else class="text-gray-500 text-center py-8">暂无证书图片</div>
       </div>
       
-      <div v-if="showCertificateZoom && zoomCertificate" class="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center p-6" @click="closeCertificateZoom">
+      <div v-if="showCertificateZoom && zoomCertificate" class="fixed inset-0 z-[60] bg-zen-green-900/20 backdrop-blur-sm flex items-center justify-center p-6" @click="closeCertificateZoom">
         <div class="bg-white rounded-2xl shadow-2xl p-4 max-w-[90vw] max-h-[90vh]" @click.stop>
           <img :src="zoomCertificate.image" :alt="zoomCertificate.name" class="max-w-[85vw] max-h-[80vh] w-auto h-auto rounded-lg cursor-zoom-out" loading="eager" decoding="async" @click="closeCertificateZoom">
         </div>
@@ -289,30 +347,42 @@
         <div class="flex justify-between items-end mb-8">
           <div>
             <h2 class="text-3xl font-bold text-gray-900">兴趣特长</h2>
-            <div class="h-1 w-20 bg-zen-green-500 mt-2 rounded-full"></div>
+            <div class="h-1.5 w-24 bg-gradient-to-r from-zen-green-400 to-zen-green-600 mt-3 rounded-full opacity-80"></div>
           </div>
         </div>
         
-        <div class="grid md:grid-cols-2 gap-8">
-          <div class="bg-zen-green-50 rounded-2xl p-8 border border-zen-green-100 relative group/card hover:shadow-lg transition-all duration-300">
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-gradient-to-br from-white to-zen-green-50 rounded-[2rem] p-8 border border-zen-green-100/50 shadow-md relative group/card hover:shadow-xl hover:scale-[1.02] hover:to-zen-green-100 transition-all duration-500">
             <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <i class="fas fa-camera text-zen-green-500"></i> 摄影
             </h3>
-            <p class="text-gray-600 leading-relaxed mb-6">
+            <p class="text-gray-600 leading-relaxed mb-6 text-sm">
               熟练使用后期软件进行后期调色与构图优化，具备较强审美能力与细节把控力，可辅助产品截图美化、活动海报设计等宣传材料制作。
             </p>
-            <button @click="openPhotoGallery" class="px-4 py-2 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-full shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-1">
+            <button @click="openPhotoGallery" class="px-4 py-2 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-full shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-1 text-sm">
               查看作品集
             </button>
           </div>
           
-          <div class="bg-zen-green-50 rounded-2xl p-8 border border-zen-green-100 relative group/card hover:shadow-lg transition-all duration-300">
+          <div class="bg-gradient-to-br from-white to-zen-green-50 rounded-[2rem] p-8 border border-zen-green-100/50 shadow-md relative group/card hover:shadow-xl hover:scale-[1.02] hover:to-zen-green-100 transition-all duration-500">
             <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <i class="fas fa-pen-fancy text-zen-green-500"></i> 随笔写作
             </h3>
-            <p class="text-gray-600 leading-relaxed">
+            <p class="text-gray-600 leading-relaxed text-sm">
               善于用文字记录思考与观察，撰写技术随笔、复盘报告，注重逻辑性与表达深度。能助力需求业务文档、复盘报告撰写，提升文档质量。
             </p>
+          </div>
+          
+          <div class="bg-gradient-to-br from-white to-zen-green-50 rounded-[2rem] p-8 border border-zen-green-100/50 shadow-md relative group/card hover:shadow-xl hover:scale-[1.02] hover:to-zen-green-100 transition-all duration-500">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <i class="fas fa-video text-zen-green-500"></i> 视频创作
+            </h3>
+            <p class="text-gray-600 leading-relaxed mb-6 text-sm">
+              具备视频拍摄与剪辑能力，能够制作产品演示、教程解说等视频内容。持续积累视频作品，打造个人视频作品集。
+            </p>
+            <button @click="openVideoGallery" class="px-4 py-2 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-full shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-1 text-sm">
+              视频作品集
+            </button>
           </div>
         </div>
       </div>
@@ -322,11 +392,11 @@
       <div class="container mx-auto px-6">
         <div class="mb-8">
           <h2 class="text-3xl font-bold text-gray-900">访客互动</h2>
-          <div class="h-1 w-20 bg-zen-green-500 mt-2 rounded-full"></div>
+          <div class="h-1.5 w-24 bg-gradient-to-r from-zen-green-400 to-zen-green-600 mt-3 rounded-full opacity-80"></div>
         </div>
 
         <div class="max-w-5xl mx-auto">
-          <div class="bg-white rounded-2xl p-6 sm:p-7 border border-gray-100 shadow-sm">
+          <div class="bg-gradient-to-br from-white to-zen-green-50/40 rounded-[2.5rem] p-8 border border-zen-green-100/50 shadow-lg hover:shadow-2xl transition-all duration-500">
             <div class="flex justify-between items-center mb-4">
               <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
                 <i class="fas fa-comment-dots text-zen-green-500"></i>
@@ -425,6 +495,14 @@
       </div>
     </section>
 
+    <AiAssistant
+      ref="aiAssistantRef"
+      :resume-data="data"
+      :visitor-form-endpoint="visitorFormEndpoint"
+      :is-visitor-form-configured="isVisitorFormConfigured"
+      @open-project="openProjectDetail"
+    />
+
     <!-- Modal -->
     <AddModal
       v-if="isEditMode"
@@ -437,69 +515,83 @@
     />
   
     <!-- Project Detail Modal -->
-    <div v-if="showProjectDetail" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="bg-zen-green-500 px-6 py-4 flex justify-between items-center">
-          <h3 class="text-white text-lg font-semibold">{{ currentProject?.title }}</h3>
-          <button @click="showProjectDetail = false" class="text-white hover:text-zen-green-100 transition-colors">
-            <i class="fas fa-times text-xl"></i>
+    <div v-if="showProjectDetail" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm">
+      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto border border-zen-green-100">
+        <div class="bg-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100 sticky top-0 z-10 backdrop-blur-md bg-white/90">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-full bg-zen-green-50 border border-zen-green-100 flex items-center justify-center text-zen-green-700">
+              <i class="fas fa-laptop-code text-lg"></i>
+            </div>
+            <h3 class="text-gray-900 text-lg font-semibold truncate">{{ currentProject?.title }}</h3>
+          </div>
+          <button @click="showProjectDetail = false" class="text-gray-500 hover:text-gray-900 transition-colors w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50">
+            <i class="fas fa-times text-lg"></i>
           </button>
         </div>
-        <div class="p-6">
+        <div class="p-8">
           <div class="mb-4">
             <p class="text-sm text-gray-500">{{ currentProject?.role }} | {{ currentProject?.period }}</p>
           </div>
           <div class="mb-6">
             <div v-if="currentProject?.image" class="overflow-hidden rounded-lg mb-4">
-              <img :src="currentProject.image" :alt="currentProject.title" 
-                   class="w-full h-64 object-cover transition-transform duration-300 cursor-zoom-in"
-                   :class="projectZoomed ? 'scale-[1.6] cursor-zoom-out' : 'scale-100'"
-                   loading="eager"
-                   decoding="async"
-                   @click="toggleProjectZoom">
+              <img
+                :src="currentProject.image"
+                :alt="currentProject.title"
+                class="w-full h-64 object-cover transition-transform duration-300 cursor-zoom-in"
+                :class="projectZoomed ? 'scale-[1.6] cursor-zoom-out' : 'scale-100'"
+                loading="eager"
+                decoding="async"
+                @click="toggleProjectZoom"
+              >
             </div>
             <p class="text-gray-600 leading-relaxed whitespace-pre-line">{{ currentProject?.description }}</p>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <span class="px-3 py-1 bg-zen-green-50 text-zen-green-700 text-xs font-medium rounded-full border border-zen-green-100">Vue 3</span>
-            <span class="px-3 py-1 bg-zen-green-50 text-zen-green-700 text-xs font-medium rounded-full border border-zen-green-100">Tailwind</span>
           </div>
         </div>
       </div>
     </div>
   
     <!-- Photo Gallery Modal -->
-    <div v-if="showPhotoGallery" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
-        <div class="bg-zen-green-500 px-6 py-4 flex justify-between items-center">
-          <h3 class="text-white text-lg font-semibold">摄影作品集</h3>
-          <button @click="showPhotoGallery = false" class="text-white hover:text-zen-green-100 transition-colors">
-            <i class="fas fa-times text-xl"></i>
+    <div v-if="showPhotoGallery" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm" @click="closePhotoGallery">
+      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden border border-zen-green-100" @click.stop>
+        <div class="bg-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100 sticky top-0 z-10 backdrop-blur-md bg-white/90">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-zen-green-50 border border-zen-green-100 flex items-center justify-center text-zen-green-700">
+              <i class="fas fa-camera text-lg"></i>
+            </div>
+            <h3 class="text-gray-900 text-lg font-semibold">摄影作品集</h3>
+          </div>
+          <button @click="closePhotoGallery" class="text-gray-500 hover:text-gray-900 transition-colors w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50">
+            <i class="fas fa-times text-lg"></i>
           </button>
         </div>
         <div class="p-6">
-          <div class="relative h-[60vh] flex items-center justify-center">
-            <button @click="prevPhoto" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors z-10">
+          <div class="relative h-[60vh] flex items-center justify-center overflow-hidden">
+            <button @click.stop="prevPhoto" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors z-20">
               <i class="fas fa-chevron-left"></i>
             </button>
-            
-            <img 
-              :src="photos[currentPhotoIndex]" 
-              :alt="`摄影作品 ${currentPhotoIndex + 1}`" 
-              class="max-w-full max-h-full object-contain"
-              loading="eager"
-              decoding="async"
-            >
-            
-            <button @click="nextPhoto" class="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors z-10">
+
+            <transition-group name="fade-photo" tag="div" class="relative w-full h-full flex items-center justify-center">
+              <img
+                v-for="(photo, index) in photos"
+                v-show="currentPhotoIndex === index"
+                :key="photo"
+                :src="photo"
+                :alt="`摄影作品 ${index + 1}`"
+                class="absolute max-w-full max-h-full object-contain"
+                loading="eager"
+                decoding="async"
+              >
+            </transition-group>
+
+            <button @click.stop="nextPhoto" class="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors z-20">
               <i class="fas fa-chevron-right"></i>
             </button>
           </div>
           <div class="mt-4 flex justify-center gap-2">
-            <button 
-              v-for="(photo, index) in photos" 
-              :key="index" 
-              @click="currentPhotoIndex = index"
+            <button
+              v-for="(photo, index) in photos"
+              :key="index"
+              @click.stop="currentPhotoIndex = index"
               class="w-3 h-3 rounded-full transition-colors"
               :class="currentPhotoIndex === index ? 'bg-zen-green-500' : 'bg-gray-300 hover:bg-zen-green-300'"
             ></button>
@@ -510,6 +602,70 @@
         </div>
       </div>
     </div>
+
+    <!-- Video Modal -->
+    <div v-if="showVideoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm" @click="showVideoModal = false">
+      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-zen-green-100" @click.stop>
+        <div class="bg-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100 sticky top-0 z-10 backdrop-blur-md bg-white/90">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-zen-green-50 border border-zen-green-100 flex items-center justify-center text-zen-green-700">
+              <i class="fas fa-video text-lg"></i>
+            </div>
+            <h3 class="text-gray-900 text-lg font-semibold">视频作品集</h3>
+          </div>
+          <button @click="showVideoModal = false" class="text-gray-500 hover:text-gray-900 transition-colors w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="p-8 text-center">
+          <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-zen-green-50 flex items-center justify-center">
+            <i class="fas fa-rocket text-4xl text-zen-green-500 animate-bounce"></i>
+          </div>
+          <h4 class="text-xl font-bold text-gray-800 mb-3">敬请期待</h4>
+          <p class="text-gray-600 leading-relaxed mb-6">
+            视频作品集功能正在筹备中<br>
+            新功能即将上线，敬请期待~
+          </p>
+          <div class="flex items-center justify-center gap-2 text-sm text-zen-green-600">
+            <i class="fas fa-clock"></i>
+            <span>即将推出</span>
+          </div>
+        </div>
+        <div class="px-6 pb-6">
+          <button @click="showVideoModal = false" class="w-full py-3 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5">
+            知道了
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Document Detail Modal -->
+    <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm" @click="showDocumentModal = false">
+      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto border border-zen-green-100" @click.stop>
+        <div class="bg-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100 sticky top-0 z-10 backdrop-blur-md bg-white/90">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-full bg-zen-green-50 border border-zen-green-100 flex items-center justify-center text-zen-green-700">
+              <i class="fas fa-file-alt text-lg"></i>
+            </div>
+            <h3 class="text-gray-900 text-lg font-semibold truncate">{{ currentDocumentType }} - {{ currentDocumentProject }}</h3>
+          </div>
+          <button @click="showDocumentModal = false" class="text-gray-500 hover:text-gray-900 transition-colors w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="p-8">
+          <div class="mt-8 text-center">
+            <p class="text-gray-500 text-sm">文档内容正在整理中，敬请期待完整版本</p>
+          </div>
+        </div>
+        <div class="px-6 pb-6">
+          <button @click="showDocumentModal = false" class="w-full py-3 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5">
+            知道了
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -517,6 +673,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useResumeData } from './data';
 import AddModal from './components/AddModal.vue';
+import AiAssistant from './components/AiAssistant.vue';
 
 const { data, addItem, updateItem, deleteItem } = useResumeData();
 
@@ -533,6 +690,12 @@ const normalizedSkills = computed(() => {
 
 // 权限控制
 const isEditMode = ref(false);
+
+const aiAssistantRef = ref(null);
+
+const openAiAssistant = () => {
+  aiAssistantRef.value?.open?.();
+};
 
 const visitorFormEndpoint = (import.meta.env.VITE_CONTACT_ENDPOINT || import.meta.env.VITE_FORMSPREE_ENDPOINT || '').trim();
 const isVisitorFormConfigured = computed(() => {
@@ -669,6 +832,7 @@ const navLinks = [
   { text: '首页', href: '#home' },
   { text: '关于', href: '#about' },
   { text: '项目', href: '#projects' },
+  { text: '作品集', href: '#portfolio' },
   { text: '技能', href: '#skills' },
   { text: '兴趣', href: '#interests' },
   { text: '联系', href: '#contact' },
@@ -686,15 +850,70 @@ const currentProject = ref(null);
 
 // Photo gallery modal
 const showPhotoGallery = ref(false);
+
+// Video modal
+const showVideoModal = ref(false);
 const photos = ref([
-  // 这里可以添加摄影作品的图片路径
-  "/摄影作品1.png",
-  "/摄影作品2.png",
-  "/摄影作品3.png",
-  "/摄影作品4.png",
-  "/摄影作品5.png"
+  "/照片作品集/3d00b1b51d31cb12e6e24bc44d592e96.jpg",
+  "/照片作品集/7b90c84a5cfb218ef3b9f5f4b11f91a6.jpg",
+  "/照片作品集/8fe93b95e50303fe15c72dfc645d7c7b.jpg",
+  "/照片作品集/75eb88627b06181f818edfe792e1531c.jpg",
+  "/照片作品集/2625bb9029d3fab6a799ffc346a7a785.jpg",
+  "/照片作品集/3214fa85a8fb44b902b4375b35416a6a.jpg",
+  "/照片作品集/46058fb7-a938-4756-96cf-fc509d85f564.png",
+  "/照片作品集/53176c98116dab62123024f0bdbbb04c.jpg",
+  "/照片作品集/660453a6a3326c25915e62a69baf2f44.jpg",
+  "/照片作品集/930014dde0c9b5525620b079890e2454.jpg",
+  "/照片作品集/f8c527ab92c586c7b9af6267e8aa354a.jpg"
 ]);
 const currentPhotoIndex = ref(0);
+let photoTimer = null;
+
+const startPhotoCarousel = () => {
+  photoTimer = setInterval(() => {
+    currentPhotoIndex.value = (currentPhotoIndex.value + 1) % photos.value.length;
+  }, 3000);
+};
+
+const stopPhotoCarousel = () => {
+  if (photoTimer) {
+    clearInterval(photoTimer);
+    photoTimer = null;
+  }
+};
+
+const openPhotoGallery = () => {
+  showPhotoGallery.value = true;
+  startPhotoCarousel();
+};
+
+const closePhotoGallery = () => {
+  showPhotoGallery.value = false;
+  stopPhotoCarousel();
+};
+
+const openVideoGallery = () => {
+  // 显示友好的提示弹窗
+  showVideoModal.value = true;
+};
+
+// Document modal
+const showDocumentModal = ref(false);
+const currentDocumentType = ref('');
+const currentDocumentProject = ref('');
+const openDocumentModal = (type, project) => {
+  currentDocumentType.value = type;
+  currentDocumentProject.value = project;
+  showDocumentModal.value = true;
+};
+
+const nextPhoto = () => {
+  currentPhotoIndex.value = (currentPhotoIndex.value + 1) % photos.value.length;
+};
+
+const prevPhoto = () => {
+  currentPhotoIndex.value = (currentPhotoIndex.value - 1 + photos.value.length) % photos.value.length;
+};
 
 
 
@@ -838,18 +1057,7 @@ const openProjectDetail = (project) => {
   showProjectDetail.value = true;
 };
 
-const openPhotoGallery = () => {
-  currentPhotoIndex.value = 0;
-  showPhotoGallery.value = true;
-};
 
-const nextPhoto = () => {
-  currentPhotoIndex.value = (currentPhotoIndex.value + 1) % photos.value.length;
-};
-
-const prevPhoto = () => {
-  currentPhotoIndex.value = (currentPhotoIndex.value - 1 + photos.value.length) % photos.value.length;
-};
 
 const handleSave = (formData) => {
   if (currentSection.value === 'profile') {
@@ -984,8 +1192,7 @@ const panTranscriptOnMove = (event) => {
   if (maxLeft > 0) el.scrollLeft = maxLeft * Math.min(Math.max(x, 0), 1);
   if (maxTop > 0) el.scrollTop = maxTop * Math.min(Math.max(y, 0), 1);
 };
-</script>
-<style>
+</script><style>
 html {
   scroll-behavior: smooth;
 }
@@ -1003,4 +1210,23 @@ html {
 .fade-leave-to {
   opacity: 0;
 }
+
+/* Slow Pulse Animation for AI Assistant */
+@keyframes pulse-slow {
+  0%, 100% {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+  50% {
+    box-shadow: 0 4px 6px -1px rgb(16 185 129 / 0.15), 0 2px 4px -2px rgb(16 185 129 / 0.1);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+.animate-pulse-slow:hover {
+  animation: none;
+}
 </style>
+

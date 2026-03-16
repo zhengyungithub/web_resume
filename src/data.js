@@ -27,7 +27,7 @@ const defaultData = {
       company: "深圳量云能源网络科技有限公司",
       role: "产品实习生",
       period: "2026/01-至今",
-      description: "所有的工作经历，应该采用倒叙（个别单位特殊规定除外），最近的两段工作，一般要写5-8项职责和业绩，如果是高层管理岗位，那么可以扩展到12项，均采用STAR法则书写，不仅仅要写做了什么，更要通过数据写出来做成了什么。"
+      description: "1. 为保障能源电力交易数据高效对接，协助产品经理完成数据源收集与模板整理，参与跨部门沟通，保障对接流程顺畅\n2. 为明确业务边界，系统学习自研产品平台业务，梳理核心功能模块与流程，形成良好业务认知框架\n3. 为支撑 AI 功能迭代规划，调研主流 AI 技术与竞品应用，输出调研分析报告与业务流程图，为产品规划提供参考\n4. 为验证 AI 方案可行性，撰写产品方案并通过 vibe coding 开发前端交互原型，辅助方案沟通与评审\n5. 为探索智能化方向，学习 AI 智能体技术概念，探索其在能源电力交易场景的潜在应用方向"
     }
   ],
   projects: [
@@ -56,6 +56,7 @@ const defaultData = {
     { id: 5, name: "普通话二甲", image: "" }
   ],
   skills: [
+    { name: "vibe coding", level: 80 },
     { name: "日常剪辑", level: 75 },
     { name: "Vue3/HTML/CSS/JS", level: 85 },
     { name: "Java/Spring Boot", level: 80 },
@@ -67,9 +68,16 @@ const defaultData = {
     { name: "PRD/用户操作手册/接口文档/需求调研报告", level: 85 },
     { name: "敏捷开发流程", level: 80 }
   ],
+  portfolio: [
+    { id: 1, title: "练习作品集", url: "https://www.figma.com/design/go7j4Nf3wfWd2XYmCI2MRT/%E2%80%9D%E8%BD%BB%E4%BA%AB%E7%94%9F%E6%B4%BB%E2%80%9Capp%E7%BB%83%E4%B9%A0%E9%A1%B9%E7%9B%AE?node-id=0-1&t=sVzlYk1HZ4wMU6L8-1", description: "‘轻享生活’app练习项目" },
+    { id: 2, title: "养老健康服务平台原型集合", url: "https://www.figma.com/design/Fp1BFLciB8TlBZSSKqGmcq/%E5%85%BB%E8%80%81%E5%81%A5%E5%BA%B7%E6%9C%8D%E5%8A%A1%E5%B9%B3%E5%8F%B0?node-id=1-83&t=DH7ltQEPuVqHjyOX-1", description: "养老健康服务平台的完整原型设计" },
+    { id: 3, title: "智能健康系统原型集合", url: "https://www.figma.com/design/yPQAJ4op5TFpmkTrPaw1A9/%E6%99%BA%E8%83%BD%E5%81%A5%E5%BA%B7%E9%A5%AE%E9%A3%9F%E7%B3%BB%E7%BB%9F?node-id=0-1&t=ssMv3xinZlHeBCVg-1", description: "智能健康饮食系统的完整原型设计" },
+    { id: 4, title: "前端功能原型演示", url: "/前端演示功能交互/4.html", description: "电力交易平台-AI智能助手（HTML Demo）" }
+  ],
   interests: [
     "摄影: 熟练使用后期软件进行后期调色与构图优化，具备较强审美能力与细节把控力，可辅助产品截图美化、活动海报设计等宣传材料制作。",
-    "随笔写作: 善于用文字记录思考与观察，撰写技术随笔、复盘报告，注重逻辑性与表达深度。能助力需求业务文档、复盘报告撰写，提升文档质量"
+    "随笔写作: 善于用文字记录思考与观察，撰写技术随笔、复盘报告，注重逻辑性与表达深度。能助力需求业务文档、复盘报告撰写，提升文档质量",
+    "视频创作: 具备视频拍摄与剪辑能力，能够制作产品演示、教程解说等视频内容。持续积累视频作品，打造个人视频作品集。"
   ]
 };
 
@@ -111,7 +119,18 @@ export const useResumeData = () => {
         .replaceAll('</strong>', '')
         .replaceAll('&lt;strong&gt;', '')
         .replaceAll('&lt;/strong&gt;', '');
-      return cleaned === description ? project : { ...project, description: cleaned };
+      
+      // Add image if not exists
+      let updatedProject = cleaned === description ? project : { ...project, description: cleaned };
+      if (!updatedProject.image) {
+        if (updatedProject.title === '智能健康饮食系统') {
+          updatedProject.image = '/智能健康饮食系统.png';
+        } else if (updatedProject.title === '养老健康服务平台') {
+          updatedProject.image = '/养老健康服务平台.png';
+        }
+      }
+      
+      return updatedProject;
     });
   }
   if (Array.isArray(initialData.skills)) {
@@ -125,6 +144,41 @@ export const useResumeData = () => {
       const level = Number.isFinite(parsed) ? Math.max(0, Math.min(100, parsed)) : 80;
       return { ...skill, name, level };
     });
+    
+    // Migration: Reorder skills to match default order
+    const skillOrder = defaultData.skills.map(s => s.name);
+    initialData.skills.sort((a, b) => {
+      const indexA = skillOrder.indexOf(a.name);
+      const indexB = skillOrder.indexOf(b.name);
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
+  }
+  
+  // Migration: Add portfolio if not exists
+  if (!Array.isArray(initialData.portfolio)) {
+    initialData.portfolio = defaultData.portfolio;
+  } else {
+    initialData.portfolio = initialData.portfolio.map((item) => {
+      if (!item || typeof item !== 'object') return item;
+      const idOk = String(item.id) === '4';
+      const titleOk = item.title === 'GitHub 代码仓库';
+      const urlOk = item.url === 'https://github.com' || item.url === 'http://github.com';
+      if (!(idOk || titleOk || urlOk)) return item;
+      if (item.url && String(item.url).includes('/前端演示功能交互/4.html')) return item;
+      return {
+        ...item,
+        title: item.title === 'GitHub 代码仓库' ? '前端功能原型演示' : item.title,
+        description: item.description === '我的开源项目和代码仓库' ? '电力交易平台-AI智能助手（HTML Demo）' : item.description,
+        url: '/前端演示功能交互/4.html'
+      };
+    });
+  }
+  
+  // Migration: Update email address
+  if (initialData.profile && initialData.profile.email === 'zhengyun_job@163.com') {
+    initialData.profile.email = defaultData.profile.email;
   }
 
   const data = reactive(initialData);

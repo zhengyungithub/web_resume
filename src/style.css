@@ -12,3 +12,29 @@
   --color-zen-green-800: #21533f;
   --color-zen-green-900: #1c4435;
 }
+
+/* Photo Gallery Transition */
+.fade-photo-enter-active,
+.fade-photo-leave-active {
+  transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+}
+
+.fade-photo-enter-from {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.fade-photo-enter-to {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fade-photo-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fade-photo-leave-to {
+  opacity: 0;
+  transform: scale(1.05);
+}
