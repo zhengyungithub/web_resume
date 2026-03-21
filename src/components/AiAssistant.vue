@@ -250,7 +250,7 @@ const quickPrompts = computed(() => [
   { key: 'fit_role', labelZh: '你适合什么岗位/方向', labelEn: 'Best-fit roles', queryZh: '你适合什么岗位', queryEn: 'what roles do you fit' },
   { key: 'stack', labelZh: '给我你的技术栈', labelEn: 'Your tech stack', queryZh: '技术栈', queryEn: 'tech stack' },
   { key: 'contact', labelZh: '如何联系你', labelEn: 'How to contact you', queryZh: '如何联系', queryEn: 'contact' },
-  { key: 'leave_message', labelZh: '我想合作/交流，怎么留言', labelEn: 'Leave a message', queryZh: '我要留言', queryEn: 'leave a message' }
+  { key: 'leave_message', labelZh: '我想合作/交流，怎么留言', labelEn: 'Leave a message', queryZh: '我想合作/交流，怎么留言', queryEn: 'leave a message' }
 ]);
 
 const copyToClipboard = async (text) => {
@@ -365,10 +365,12 @@ const resetToGuide = async () => {
   input.value = '';
   messages.value = [];
   await nextTick();
+  
+  // 直接显示固定欢迎语，不等待 API
   await appendMessage({
     role: 'assistant',
     meta: 'greeting',
-    text: t('greet')(),
+    text: '你好~我是阿筠，欢迎来到我的个人网站。你可以问我关于教育、实习、项目、技能或作品集的问题。',
     citations: [],
     actions: []
   });
@@ -678,37 +680,35 @@ const basicAnswer = (q) => {
 // 过滤锚点标识符的函数
 const filterAnchors = (text) => {
   if (typeof text !== 'string') return text;
-  // 移除常见的锚点标识符
+  // 移除常见的锚点标识符（包括 # 前缀）
   const anchors = ['skills-list', 'project', 'work', 'projects', 'about', 'certificates', 'interests', 'visitor', 'contact'];
   let filteredText = text;
   anchors.forEach(anchor => {
-    // 移除行尾的锚点
-    filteredText = filteredText.replace(new RegExp(`\\s*${anchor}$`, 'gm'), '');
+    // 移除任意位置的锚点（包括 # 前缀）
+    filteredText = filteredText.replace(new RegExp(`^#?${anchor}$`, 'gm'), '');
   });
   return filteredText.trim();
 };
 
 const callChatApi = async (q) => {
-  console.log('前端发送的问题：', q);
-  console.log('问题类型：', typeof q);
-  console.log('问题长度：', q.length);
-
-  // 确保问题是字符串类型
-  const question = String(q || '').trim();
-  console.log('处理后的问题：', question);
-
-  const payload = {
-    question: question
-  };
-
-  console.log('前端发送的 payload：', payload);
-
-  // 使用 JSON.stringify 确保中文编码正确
-  const payloadStr = JSON.stringify(payload);
-  console.log('序列化后的 payload：', payloadStr);
-
   try {
-    const res = await fetch('/api/chat', {
+    console.log('前端发送的问题：', q);
+    console.log('问题类型：', typeof q);
+    console.log('问题长度：', q ? q.length : 0);
+
+    const question = String(q || '').trim();
+    console.log('处理后的问题：', question);
+
+    const payload = {
+      question: question
+    };
+
+    console.log('前端发送的 payload：', payload);
+
+    const payloadStr = JSON.stringify(payload);
+    console.log('序列化后的 payload：', payloadStr);
+
+    const res = await fetch('/api/chat?' + Date.now(), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=utf-8'
@@ -723,18 +723,30 @@ const callChatApi = async (q) => {
       throw new Error(msg);
     }
 
-    // 处理响应
     const data = await res.json();
     console.log('后端响应数据：', data);
-    const replyText = typeof data?.reply === 'string' ? data.reply : t('unknown');
+    console.log('后端返回的 reply 长度：', data?.reply ? data.reply.length : 0);
+    console.log('后端返回的 reply 内容：', data?.reply);
+    
+    const replyText = typeof data?.reply === 'string' ? data.reply : '';
+    
+    if (!replyText || replyText.trim() === '') {
+      throw new Error('Coze 工作流未返回任何回答');
+    }
+    
+    const filteredText = filterAnchors(replyText);
+    console.log('过滤后的文本长度：', filteredText.length);
+    console.log('过滤后的文本内容：', filteredText);
     
     return {
-      text: filterAnchors(replyText),
+      text: filteredText,
       citations: Array.isArray(data?.citations) && data.citations.length ? data.citations : [],
       actions: []
     };
   } catch (error) {
     console.error('API 调用错误：', error);
+    console.error('错误信息：', error.message);
+    console.error('错误堆栈：', error.stack);
     throw error;
   }
 };
@@ -894,9 +906,14 @@ const runAction = async (a) => {
     try {
       const reply = await callChatApi(query);
       await appendMessage({ role: 'assistant', ...reply });
-    } catch {
-      const reply = basicAnswer(query);
-      await appendMessage({ role: 'assistant', ...reply });
+    } catch (error) {
+      console.error('API 调用失败：', error);
+      await appendMessage({ 
+        role: 'assistant', 
+        text: `抱歉，调用 Coze 工作流失败：${error.message || '未知错误'}`,
+        citations: [],
+        actions: []
+      });
     } finally {
       isLoading.value = false;
     }
@@ -916,9 +933,23 @@ const runAction = async (a) => {
       a.direction === 'ai' ? 'AI' :
       a.direction === 'perf' ? (lang.value === 'zh' ? '性能' : 'Performance') :
       (lang.value === 'zh' ? '工程化' : 'Engineering');
+    const query = lang.value === 'zh' ? `${label} 项目` : `projects ${label}`;
     await appendMessage({ role: 'user', text: lang.value === 'zh' ? `按${label}方向推荐项目` : `Recommend projects: ${label}`, citations: [], actions: [] });
-    const reply = basicAnswer(lang.value === 'zh' ? `${label} 项目` : `projects ${label}`);
-    await appendMessage({ role: 'assistant', ...reply });
+    isLoading.value = true;
+    try {
+      const reply = await callChatApi(query);
+      await appendMessage({ role: 'assistant', ...reply });
+    } catch (error) {
+      console.error('API 调用失败：', error);
+      await appendMessage({ 
+        role: 'assistant', 
+        text: `抱歉，调用 Coze 工作流失败：${error.message || '未知错误'}`,
+        citations: [],
+        actions: []
+      });
+    } finally {
+      isLoading.value = false;
+    }
     return;
   }
   if (a.type === 'copy_email') {
@@ -991,57 +1022,52 @@ const onSend = async () => {
     console.error('API 调用失败：', error);
     console.error('错误信息：', error.message);
     console.error('错误堆栈：', error.stack);
-    const reply = basicAnswer(q);
-    await appendMessage({ role: 'assistant', ...reply });
+    await appendMessage({ 
+      role: 'assistant', 
+      text: `抱歉，调用 Coze 工作流失败：${error.message || '未知错误'}`,
+      citations: [],
+      actions: []
+    });
   } finally {
     isLoading.value = false;
   }
 };
 
 const handleGuideClick = async (s) => {
-  if (s.key === 'about' && lang.value === 'zh') {
-    await appendMessage({ role: 'user', text: '关于我', citations: [], actions: [] });
-    await appendMessage({
-      role: 'assistant',
-      text: '你想先了解哪一部分？\n- 教育背景：学校/专业/成绩/课程\n- 实习经历：公司/职责/AI探索\n\n点击下方按钮，我会基于站内信息回答。',
-      citations: makeCitations([{ title: '教育背景', href: '#education' }, { title: '实习经历', href: '#work' }, { title: '关于我', href: '#about' }]),
-      actions: [
-        { key: 'ask_edu', label: '教育背景', type: 'ask', query: '教育经历' },
-        { key: 'ask_work', label: '实习经历', type: 'ask', query: '工作经历' },
-        { key: 'jump_about', label: '打开关于我模块', type: 'jump', href: '#about' }
-      ]
-    });
-    return;
-  }
   const q = lang.value === 'zh' ? s.titleZh : s.titleEn;
   await appendMessage({ role: 'user', text: q, citations: [], actions: [] });
   isLoading.value = true;
   try {
     const reply = await callChatApi(q);
     await appendMessage({ role: 'assistant', ...reply });
-  } catch {
-    const reply = basicAnswer(q);
-    await appendMessage({ role: 'assistant', ...reply });
+  } catch (error) {
+    console.error('API 调用失败：', error);
+    await appendMessage({ 
+      role: 'assistant', 
+      text: `抱歉，调用 Coze 工作流失败：${error.message || '未知错误'}`,
+      citations: [],
+      actions: []
+    });
   } finally {
     isLoading.value = false;
   }
 };
 
 const handleQuickClick = async (p) => {
-  const q = lang.value === 'zh' ? p.queryZh : p.queryEn;
-  await appendMessage({ role: 'user', text: lang.value === 'zh' ? p.labelZh : p.labelEn, citations: [], actions: [] });
-  if (p.key === 'leave_message') {
-    const reply = basicAnswer(lang.value === 'zh' ? '联系' : 'contact');
-    await appendMessage({ role: 'assistant', ...reply });
-    return;
-  }
+  const q = lang.value === 'zh' ? p.labelZh : p.labelEn;
+  await appendMessage({ role: 'user', text: q, citations: [], actions: [] });
   isLoading.value = true;
   try {
     const reply = await callChatApi(q);
     await appendMessage({ role: 'assistant', ...reply });
-  } catch {
-    const reply = basicAnswer(q);
-    await appendMessage({ role: 'assistant', ...reply });
+  } catch (error) {
+    console.error('API 调用失败：', error);
+    await appendMessage({ 
+      role: 'assistant', 
+      text: `抱歉，调用 Coze 工作流失败：${error.message || '未知错误'}`,
+      citations: [],
+      actions: []
+    });
   } finally {
     isLoading.value = false;
   }

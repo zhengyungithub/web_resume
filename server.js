@@ -25,6 +25,9 @@ app.post('/api/contact', contactHandler);
 const chatRouter = createChatRouter();
 app.use('/api', chatRouter);
 
+// 提供静态文件服务
+app.use(express.static('public'));
+
 // 启动服务器
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

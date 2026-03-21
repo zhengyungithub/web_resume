@@ -31,11 +31,9 @@
           </h1>
           <p class="text-lg text-gray-600 leading-relaxed max-w-lg min-h-[28px]"></p>
 <!--           AI Assistant Preview-->
-          <div class="flex items-center gap-4 pt-4">
+          <div class="flex items-center gap-4 pt-4 flex-wrap">
             <div class="relative flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-full pl-2 pr-5 py-2 border border-zen-green-100 shadow-sm hover:shadow-lg hover:shadow-zen-green-100/50 transition-all cursor-pointer group animate-pulse-slow" @click="openAiAssistant">
-              <!-- 装饰性光晕 -->
               <div class="absolute -inset-0.5 bg-gradient-to-r from-zen-green-200/50 via-zen-green-300/30 to-zen-green-200/50 rounded-full blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <!-- 在线状态指示器 -->
               <div class="absolute top-1 left-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white shadow-sm z-10">
                 <span class="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-75"></span>
               </div>
@@ -51,6 +49,7 @@
               </div>
               <i class="fas fa-comment-dots text-zen-green-400 group-hover:text-zen-green-600 transition-colors ml-1 group-hover:scale-110 transform"></i>
             </div>
+
           </div>
         </div>
         <div class="relative flex justify-center md:justify-end animate-fade-in">
@@ -111,9 +110,9 @@
               </button>
               <h3 id="education" class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                 <i class="fas fa-graduation-cap text-zen-green-500"></i> 教育背景
-                <button @click="openTranscriptPreview" class="ml-auto px-3 py-1 text-sm rounded-full bg-zen-green-100 text-zen-green-700 hover:bg-zen-green-600 hover:text-white transition-all">
+                <!-- <button @click="openTranscriptPreview" class="ml-auto px-3 py-1 text-sm rounded-full bg-zen-green-100 text-zen-green-700 hover:bg-zen-green-600 hover:text-white transition-all">
                   查看成绩单
-                </button>
+                </button> -->
               </h3>
               <div v-for="edu in data.education" :key="edu.id" class="mb-6 last:mb-0 border-l-2 border-zen-green-200 pl-4 ml-1 relative">
                 <div class="absolute -left-[21px] top-1 w-3 h-3 bg-zen-green-500 rounded-full ring-4 ring-zen-green-50"></div>
@@ -143,7 +142,7 @@
                 <h4 class="font-semibold text-gray-800">{{ job.company }}</h4>
                 <p class="text-sm text-zen-green-600 mb-1">{{ job.role }} | {{ job.period }}</p>
                 <ul class="text-sm text-gray-500 space-y-1">
-                  <li v-for="(item, index) in job.description.split('\n')" :key="index" class="leading-relaxed" v-html="item.replace(/(vibe coding|AI 智能体)/g, '<strong class=\'font-medium text-gray-700\'>$1</strong>')"></li>
+                  <li v-for="(item, index) in job.description.split('\n')" :key="index" class="leading-relaxed" v-html="item"></li>
                 </ul>
               </div>
             </div>
@@ -199,19 +198,18 @@
                   <p class="text-sm text-gray-500 mt-1">{{ project.role }} | {{ project.period }}</p>
                 </div>
               </div>
-              <p class="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-4 whitespace-pre-line">
-                {{ project.description }}
+              <p class="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-4 whitespace-pre-line" v-html="project.description.replace(/(需求挖掘与定位|AI应用与用户体验优化|跨团队协作与落地|数据驱动迭代|技术方案落地|用户需求挖掘|适老化体验优化|快速迭代与验证|跨角色协同设计)\s*：?/g, '<strong class=\'font-semibold text-gray-900\'>$1</strong>：')">
               </p>
 
               <div class="flex flex-wrap gap-3">
-                <button @click="openDocumentModal('需求文档', project.title)" class="px-4 py-2 bg-zen-green-50 text-zen-green-700 font-medium rounded-lg border border-zen-green-100 hover:bg-zen-green-100 transition-all text-sm flex items-center gap-2">
+                <a href="https://ycnv3va6cnba.feishu.cn/wiki/E2k5wMjAXiZGaskU2E9ceLdXnve?from=from_copylink" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-zen-green-50 text-zen-green-700 font-medium rounded-lg border border-zen-green-100 hover:bg-zen-green-100 transition-all text-sm flex items-center gap-2">
                   <i class="fas fa-file-alt"></i>
                   <span>需求文档</span>
-                </button>
-                <button @click="openDocumentModal('产品设计文档', project.title)" class="px-4 py-2 bg-zen-green-50 text-zen-green-700 font-medium rounded-lg border border-zen-green-100 hover:bg-zen-green-100 transition-all text-sm flex items-center gap-2">
+                </a>
+                <a href="https://ycnv3va6cnba.feishu.cn/wiki/LI4mwZLoLi5KF8kbAzvcUmFdnfW?from=from_copylink" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-zen-green-50 text-zen-green-700 font-medium rounded-lg border border-zen-green-100 hover:bg-zen-green-100 transition-all text-sm flex items-center gap-2">
                   <i class="fas fa-pen-fancy"></i>
                   <span>产品设计文档</span>
-                </button>
+                </a>
               </div>
 
             </div>
@@ -240,7 +238,11 @@
                   <p class="text-gray-600 text-sm leading-relaxed mt-2">{{ item.description }}</p>
                 </div>
               </div>
-              <a :href="item.url" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-full shadow-md transition-all transform hover:-translate-y-0.5">
+              <button v-if="item.title === '养老健康服务平台前端功能原型演示'" @click="openRoleModal" class="inline-flex items-center gap-2 px-4 py-2 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-full shadow-md transition-all transform hover:-translate-y-0.5">
+                <i class="fas fa-external-link-alt"></i>
+                <span>访问链接</span>
+              </button>
+              <a v-else :href="item.url" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-full shadow-md transition-all transform hover:-translate-y-0.5">
                 <i class="fas fa-external-link-alt"></i>
                 <span>访问链接</span>
               </a>
@@ -271,9 +273,10 @@
           <div class="bg-gradient-to-br from-zen-green-50/50 to-white rounded-[2.5rem] p-8 border border-zen-green-100/50 shadow-inner">
             <div class="flex flex-wrap gap-3">
               <div v-for="(cert, index) in data.certificates" :key="index" 
-                   class="px-4 py-2 bg-white text-gray-700 rounded-lg shadow-sm hover:shadow-md hover:text-zen-green-600 transition-all cursor-default border border-gray-100 relative"
+                   class="px-4 py-2 bg-white text-gray-700 rounded-lg shadow-sm hover:shadow-md hover:text-zen-green-600 transition-all cursor-pointer border border-gray-100 relative"
                    @mouseenter="showCertificateImage(cert, $event)"
-                   @mouseleave="scheduleHideCertificateImage">
+                   @mouseleave="scheduleHideCertificateImage"
+                   @click="openCertificateZoom(cert)">
                 {{ cert.name }}
                 <div v-if="isEditMode" class="absolute top-0 right-0 flex gap-1 p-1">
                   <button v-if="deleteMode === 'certificate'" @click.stop="deleteItem('certificates', index)" 
@@ -309,16 +312,27 @@
           </div>
           <div class="bg-gradient-to-br from-zen-green-50/50 to-white rounded-[2.5rem] p-8 border border-zen-green-100/50 shadow-inner">
             <div class="flex flex-wrap gap-4">
-              <div v-for="(skill, index) in normalizedSkills" :key="skill.id || skill.name || index" class="bg-white rounded-xl shadow-sm border border-gray-100 px-3 py-1.5 hover:shadow-md transition-all relative w-fit max-w-full overflow-hidden" :class="isEditMode ? 'pr-14' : ''">
-                <div class="text-gray-800 font-medium truncate">{{ skill.name }}</div>
-                <div v-if="isEditMode" class="absolute top-2 right-2 flex gap-1">
-                  <button v-if="deleteMode === 'skill'" @click="deleteItem('skills', index)" class="w-6 h-6 rounded-full bg-red-100 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all text-xs" title="删除技能">
+              <div v-for="(skill, index) in normalizedSkills" :key="skill.id || skill.name || index" 
+                   class="bg-white rounded-xl shadow-sm border border-gray-100 px-3 py-1.5 hover:shadow-md transition-all relative w-fit max-w-full overflow-hidden group"
+                   :class="isEditMode ? 'pr-14' : ''"
+                   :style="{ animationDelay: `${index * 0.05}s` }">
+                <!-- 背景渐变效果 -->
+                <div class="absolute inset-0 bg-gradient-to-r from-zen-green-100/0 to-zen-green-100/0 group-hover:from-zen-green-100/30 group-hover:to-zen-green-100/10 transition-all duration-300"></div>
+                <!-- 发光效果 -->
+                <div class="absolute -inset-0.5 bg-gradient-to-r from-zen-green-400/0 to-zen-green-500/0 rounded-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300 blur-sm"></div>
+                <!-- 技能名称 -->
+                <div class="text-gray-800 font-medium truncate relative z-10 group-hover:text-zen-green-700 transition-colors duration-300">{{ skill.name }}</div>
+                <!-- 编辑模式按钮 -->
+                <div v-if="isEditMode" class="absolute top-2 right-2 flex gap-1 relative z-20">
+                  <button v-if="deleteMode === 'skill'" @click.stop="deleteItem('skills', index)" class="w-6 h-6 rounded-full bg-red-100 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all text-xs transform hover:scale-110" title="删除技能">
                     <i class="fas fa-trash"></i>
                   </button>
-                  <button @click="openEditModal('skill', data.skills[index], index)" class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all text-xs" title="编辑技能">
+                  <button @click.stop="openEditModal('skill', data.skills[index], index)" class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all text-xs transform hover:scale-110" title="编辑技能">
                     <i class="fas fa-edit"></i>
                   </button>
                 </div>
+                <!-- 点击效果 -->
+                <div class="absolute inset-0 bg-zen-green-500/10 opacity-0 transition-opacity duration-200"></div>
               </div>
             </div>
           </div>
@@ -334,9 +348,17 @@
         <div v-else class="text-gray-500 text-center py-8">暂无证书图片</div>
       </div>
       
-      <div v-if="showCertificateZoom && zoomCertificate" class="fixed inset-0 z-[60] bg-zen-green-900/20 backdrop-blur-sm flex items-center justify-center p-6" @click="closeCertificateZoom">
-        <div class="bg-white rounded-2xl shadow-2xl p-4 max-w-[90vw] max-h-[90vh]" @click.stop>
-          <img :src="zoomCertificate.image" :alt="zoomCertificate.name" class="max-w-[85vw] max-h-[80vh] w-auto h-auto rounded-lg cursor-zoom-out" loading="eager" decoding="async" @click="closeCertificateZoom">
+      <div v-if="showCertificateZoom && zoomCertificate" class="fixed inset-0 z-[60] flex items-center justify-center p-6" @click="closeCertificateZoom">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-2xl max-h-[80vh] flex flex-col" @click.stop>
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-gray-900">{{ zoomCertificate.name }}</h3>
+            <button @click="closeCertificateZoom" class="text-gray-500 hover:text-gray-900 transition-colors w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50">
+              <i class="fas fa-times text-lg"></i>
+            </button>
+          </div>
+          <div class="flex-1 overflow-auto flex items-center justify-center">
+            <img :src="zoomCertificate.image" :alt="zoomCertificate.name" class="max-w-full max-h-[60vh] w-auto h-auto rounded-lg cursor-zoom-out" loading="eager" decoding="async" @click="closeCertificateZoom">
+          </div>
         </div>
       </div>
     </section>
@@ -368,9 +390,12 @@
             <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <i class="fas fa-pen-fancy text-zen-green-500"></i> 随笔写作
             </h3>
-            <p class="text-gray-600 leading-relaxed text-sm">
+            <p class="text-gray-600 leading-relaxed mb-6 text-sm">
               善于用文字记录思考与观察，撰写技术随笔、复盘报告，注重逻辑性与表达深度。能助力需求业务文档、复盘报告撰写，提升文档质量。
             </p>
+            <button @click="openWritingGallery" class="px-4 py-2 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-full shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-1 text-sm">
+              随笔作品集
+            </button>
           </div>
           
           <div class="bg-gradient-to-br from-white to-zen-green-50 rounded-[2rem] p-8 border border-zen-green-100/50 shadow-md relative group/card hover:shadow-xl hover:scale-[1.02] hover:to-zen-green-100 transition-all duration-500">
@@ -418,27 +443,27 @@
               <div class="grid sm:grid-cols-2 gap-3">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1" for="visitorName">姓名</label>
-                  <input id="visitorName" name="name" v-model.trim="visitorName" type="text" autocomplete="name" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-zen-green-500 focus:border-transparent transition-all outline-none">
+                  <input id="visitorName" name="name" v-model="visitorName" type="text" autocomplete="name" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-zen-green-500 focus:border-transparent transition-all outline-none">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1" for="visitorEmail">邮箱</label>
-                  <input id="visitorEmail" name="email" v-model.trim="visitorEmail" type="email" autocomplete="email" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-zen-green-500 focus:border-transparent transition-all outline-none">
+                  <label class="block text-sm font-medium text-gray-700 mb-1" for="visitorEmail">邮箱 <span class="text-xs text-zen-green-600">(请仔细核对邮箱地址，方便我及时给你回信哦~)</span></label>
+                  <input id="visitorEmail" name="email" v-model="visitorEmail" type="email" autocomplete="email" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-zen-green-500 focus:border-transparent transition-all outline-none">
                 </div>
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1" for="visitorSubject">主题</label>
-                <input id="visitorSubject" name="subject" v-model.trim="visitorSubject" type="text" autocomplete="off" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-zen-green-500 focus:border-transparent transition-all outline-none">
+                <input id="visitorSubject" name="subject" v-model="visitorSubject" type="text" autocomplete="off" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-zen-green-500 focus:border-transparent transition-all outline-none">
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1" for="visitorMessage">留言内容</label>
-                <textarea id="visitorMessage" name="message" v-model.trim="visitorMessage" rows="4" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-zen-green-500 focus:border-transparent transition-all outline-none resize-none"></textarea>
+                <textarea id="visitorMessage" name="message" v-model="visitorMessage" rows="4" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-zen-green-500 focus:border-transparent transition-all outline-none resize-none"></textarea>
               </div>
 
               <div class="flex items-center justify-between gap-4">
                 <p class="text-xs text-gray-500">
-                  提交即表示同意将表单内容用于邮件联系。
+                  *提交即表示同意将表单内容用于邮件联系。
                 </p>
                 <button type="submit" :disabled="visitorSubmitting || !isVisitorFormConfigured" class="px-6 py-2 bg-zen-green-600 hover:bg-zen-green-700 disabled:bg-zen-green-300 disabled:cursor-not-allowed text-white rounded-full shadow-md transition-all">
                   {{ visitorSubmitting ? '发送中…' : '提交' }}
@@ -449,8 +474,9 @@
                 未配置表单服务，暂时无法提交。请设置 VITE_FORMSPREE_ENDPOINT 后再试。
               </div>
 
-              <div v-if="visitorStatus === 'success'" class="text-sm text-zen-green-700 bg-zen-green-50 border border-zen-green-100 rounded-lg px-3 py-2">
-                已发送，我会尽快回复。
+              <div v-if="visitorStatus === 'success'" class="text-sm text-zen-green-700 bg-zen-green-50 border border-zen-green-100 rounded-lg px-3 py-2 flex items-center gap-2 animate-success-pulse">
+                <i class="fas fa-check-circle text-zen-green-600 animate-success-icon"></i>
+                <span>已发送，我会尽快回复。</span>
               </div>
               <div v-else-if="visitorStatus === 'error'" class="text-sm text-red-700 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
                 {{ visitorErrorText || '发送失败，请稍后重试。' }}
@@ -477,7 +503,7 @@
           </div>
           <div class="flex flex-col items-center gap-3 group">
             <div class="w-12 h-12 rounded-full bg-zen-green-800 flex items-center justify-center text-zen-green-300 group-hover:bg-zen-green-700 group-hover:text-white transition-all">
-              <i class="fas fa-phone text-xl"></i>
+              <i class="fab fa-qq text-xl"></i>
             </div>
             <span class="text-zen-green-100 group-hover:text-white transition-colors">{{ data.profile.phone }}</span>
           </div>
@@ -502,6 +528,8 @@
       :is-visitor-form-configured="isVisitorFormConfigured"
       @open-project="openProjectDetail"
     />
+
+
 
     <!-- Modal -->
     <AddModal
@@ -544,60 +572,131 @@
                 @click="toggleProjectZoom"
               >
             </div>
-            <p class="text-gray-600 leading-relaxed whitespace-pre-line">{{ currentProject?.description }}</p>
+            <p class="text-gray-600 leading-relaxed whitespace-pre-line" v-html="currentProject?.description.replace(/(需求挖掘与定位|AI应用与用户体验优化|跨团队协作与落地|数据驱动迭代|技术方案落地|用户需求挖掘|适老化体验优化|快速迭代与验证|跨角色协同设计)\s*：?/g, '<strong class=\'font-semibold text-gray-900\'>$1</strong>：')"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Photo Orientation Selector Modal -->
+    <div v-if="showPhotoOrientationSelector" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm animate-fade-in" @click="closePhotoOrientationSelector">
+      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg mx-4 overflow-hidden border border-zen-green-100 animate-scale-up" @click.stop>
+        <div class="bg-gradient-to-r from-zen-green-50 to-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-zen-green-100 border border-zen-green-200 flex items-center justify-center text-zen-green-600 shadow-sm">
+              <i class="fas fa-camera text-lg"></i>
+            </div>
+            <div>
+              <h3 class="text-gray-900 text-lg font-semibold">摄影作品集</h3>
+              <p class="text-xs text-zen-green-600">请选择您想查看的照片类型</p>
+            </div>
+          </div>
+          <button @click="closePhotoOrientationSelector" class="text-gray-500 hover:text-zen-green-600 transition-all w-9 h-9 flex items-center justify-center rounded-full hover:bg-zen-green-50 hover:shadow-md">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="p-8">
+          <div class="grid grid-cols-2 gap-6">
+            <button @click="selectPhotoOrientation('landscape')" class="group relative bg-gradient-to-br from-zen-green-50 to-white rounded-2xl p-6 border-2 border-zen-green-100 hover:border-zen-green-400 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div class="flex flex-col items-center gap-4">
+                <div class="w-16 h-12 rounded-lg bg-zen-green-200 group-hover:bg-zen-green-300 transition-colors flex items-center justify-center shadow-md">
+                  <i class="fas fa-image text-zen-green-600 text-xl"></i>
+                </div>
+                <div class="text-center">
+                  <h4 class="text-gray-900 font-semibold text-lg mb-1">横屏照片</h4>
+                  <p class="text-gray-500 text-sm">{{ landscapePhotos.length }} 张作品</p>
+                </div>
+              </div>
+              <div class="absolute top-3 right-3 w-6 h-6 rounded-full bg-zen-green-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <i class="fas fa-arrow-right text-zen-green-600 text-xs"></i>
+              </div>
+            </button>
+            
+            <button @click="selectPhotoOrientation('portrait')" class="group relative bg-gradient-to-br from-zen-green-50 to-white rounded-2xl p-6 border-2 border-zen-green-100 hover:border-zen-green-400 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div class="flex flex-col items-center gap-4">
+                <div class="w-12 h-16 rounded-lg bg-zen-green-200 group-hover:bg-zen-green-300 transition-colors flex items-center justify-center shadow-md">
+                  <i class="fas fa-image text-zen-green-600 text-xl"></i>
+                </div>
+                <div class="text-center">
+                  <h4 class="text-gray-900 font-semibold text-lg mb-1">竖屏照片</h4>
+                  <p class="text-gray-500 text-sm">{{ portraitPhotos.length }} 张作品</p>
+                </div>
+              </div>
+              <div class="absolute top-3 right-3 w-6 h-6 rounded-full bg-zen-green-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <i class="fas fa-arrow-right text-zen-green-600 text-xs"></i>
+              </div>
+            </button>
           </div>
         </div>
       </div>
     </div>
   
     <!-- Photo Gallery Modal -->
-    <div v-if="showPhotoGallery" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm" @click="closePhotoGallery">
-      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden border border-zen-green-100" @click.stop>
-        <div class="bg-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100 sticky top-0 z-10 backdrop-blur-md bg-white/90">
+    <div v-if="showPhotoGallery" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm animate-fade-in" @click="closePhotoGallery">
+      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-5xl mx-4 overflow-hidden border border-zen-green-100 animate-scale-up" :class="currentPhotoType === 'portrait' ? 'max-h-[95vh]' : 'max-h-[90vh]'" @click.stop>
+        <div class="bg-gradient-to-r from-zen-green-50 to-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100 sticky top-0 z-10 backdrop-blur-md">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-zen-green-50 border border-zen-green-100 flex items-center justify-center text-zen-green-700">
+            <div class="w-10 h-10 rounded-full bg-zen-green-100 border border-zen-green-200 flex items-center justify-center text-zen-green-600 shadow-sm">
               <i class="fas fa-camera text-lg"></i>
             </div>
-            <h3 class="text-gray-900 text-lg font-semibold">摄影作品集</h3>
+            <div>
+              <h3 class="text-gray-900 text-lg font-semibold">{{ currentPhotoType === 'landscape' ? '横屏' : '竖屏' }}摄影作品集</h3>
+              <p class="text-xs text-zen-green-600">{{ photos.length }} 张作品</p>
+            </div>
           </div>
-          <button @click="closePhotoGallery" class="text-gray-500 hover:text-gray-900 transition-colors w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50">
-            <i class="fas fa-times text-lg"></i>
-          </button>
+          <div class="flex items-center gap-2">
+            <button @click="showPhotoGallery = false; showPhotoOrientationSelector = true" class="text-gray-500 hover:text-zen-green-600 transition-all px-3 py-1.5 rounded-full hover:bg-zen-green-50 text-sm">
+              <i class="fas fa-exchange-alt mr-1"></i>切换
+            </button>
+            <button @click="closePhotoGallery" class="text-gray-500 hover:text-zen-green-600 transition-all w-9 h-9 flex items-center justify-center rounded-full hover:bg-zen-green-50 hover:shadow-md">
+              <i class="fas fa-times text-lg"></i>
+            </button>
+          </div>
         </div>
-        <div class="p-6">
-          <div class="relative h-[60vh] flex items-center justify-center overflow-hidden">
-            <button @click.stop="prevPhoto" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors z-20">
+        <div class="p-6 bg-gradient-to-b from-white to-zen-green-50/30">
+          <div class="relative flex items-center justify-center overflow-hidden rounded-2xl bg-zen-green-50/50 shadow-inner" :style="currentPhotoType === 'portrait' ? 'height: 80vh; max-height: 700px;' : 'height: 60vh;'">
+            <button @click.stop="prevPhoto" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 rounded-full bg-zen-green-600/60 text-white flex items-center justify-center hover:bg-zen-green-700/80 transition-all z-20 shadow-lg hover:shadow-xl hover:scale-110 active:scale-95">
               <i class="fas fa-chevron-left"></i>
             </button>
 
-            <transition-group name="fade-photo" tag="div" class="relative w-full h-full flex items-center justify-center">
+            <div class="relative w-full h-full flex items-center justify-center">
               <img
                 v-for="(photo, index) in photos"
-                v-show="currentPhotoIndex === index"
+                v-show="currentPhotoIndex === index || prevPhotoIndex === index"
                 :key="photo"
                 :src="photo"
                 :alt="`摄影作品 ${index + 1}`"
-                class="absolute max-w-full max-h-full object-contain"
+                class="absolute max-w-full max-h-full object-contain cursor-zoom-in transition-opacity duration-700 hover:scale-105 rounded-lg"
+                :class="currentPhotoIndex === index ? 'opacity-100' : 'opacity-0'"
                 loading="eager"
                 decoding="async"
+                @click="zoomPhoto"
               >
-            </transition-group>
+            </div>
 
-            <button @click.stop="nextPhoto" class="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors z-20">
+            <button @click.stop="nextPhoto" class="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 rounded-full bg-zen-green-600/60 text-white flex items-center justify-center hover:bg-zen-green-700/80 transition-all z-20 shadow-lg hover:shadow-xl hover:scale-110 active:scale-95">
               <i class="fas fa-chevron-right"></i>
             </button>
           </div>
-          <div class="mt-4 flex justify-center gap-2">
+          <div class="mt-6 flex justify-center gap-3">
             <button
               v-for="(photo, index) in photos"
               :key="index"
-              @click.stop="currentPhotoIndex = index"
-              class="w-3 h-3 rounded-full transition-colors"
-              :class="currentPhotoIndex === index ? 'bg-zen-green-500' : 'bg-gray-300 hover:bg-zen-green-300'"
+              @click.stop="prevPhotoIndex = currentPhotoIndex; currentPhotoIndex = index"
+              class="w-3 h-3 rounded-full transition-all duration-300 hover:scale-125"
+              :class="currentPhotoIndex === index ? 'bg-zen-green-500 w-6 shadow-md shadow-zen-green-200' : 'bg-gray-300 hover:bg-zen-green-300'"
             ></button>
           </div>
-          <div class="mt-4 text-center text-gray-500">
-            {{ currentPhotoIndex + 1 }} / {{ photos.length }}
+          <div class="mt-4 flex justify-center items-center gap-3">
+            <span class="text-sm text-gray-600 font-medium">第 {{ currentPhotoIndex + 1 }} 张</span>
+            <span class="text-gray-300">|</span>
+            <span class="text-sm text-gray-600">共 {{ photos.length }} 张</span>
+            <div class="flex items-center gap-2 ml-4">
+              <button @click.stop="toggleAutoPlay" class="px-3 py-1.5 rounded-full text-xs font-medium transition-all" :class="isAutoPlaying ? 'bg-zen-green-100 text-zen-green-700' : 'bg-gray-100 text-gray-600 hover:bg-zen-green-50 hover:text-zen-green-600'">
+                <i :class="isAutoPlaying ? 'fas fa-pause' : 'fas fa-play'" class="mr-1"></i>
+                {{ isAutoPlaying ? '暂停' : '自动播放' }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -638,10 +737,81 @@
         </div>
       </div>
     </div>
+    
+    <!-- Writing Modal -->
+    <div v-if="showWritingModal" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm" @click="showWritingModal = false">
+      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-zen-green-100" @click.stop>
+        <div class="bg-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100 sticky top-0 z-10 backdrop-blur-md bg-white/90">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-zen-green-50 border border-zen-green-100 flex items-center justify-center text-zen-green-700">
+              <i class="fas fa-pen-fancy text-lg"></i>
+            </div>
+            <h3 class="text-gray-900 text-lg font-semibold">随笔作品集</h3>
+          </div>
+          <button @click="showWritingModal = false" class="text-gray-500 hover:text-gray-900 transition-colors w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="p-8 text-center">
+          <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-zen-green-50 flex items-center justify-center">
+            <i class="fas fa-rocket text-4xl text-zen-green-500 animate-bounce"></i>
+          </div>
+          <h4 class="text-xl font-bold text-gray-800 mb-3">敬请期待</h4>
+          <p class="text-gray-600 leading-relaxed mb-6">
+            随笔作品集功能正在筹备中<br>
+            新功能即将上线，敬请期待~
+          </p>
+          <div class="flex items-center justify-center gap-2 text-sm text-zen-green-600">
+            <i class="fas fa-clock"></i>
+            <span>即将推出</span>
+          </div>
+        </div>
+        <div class="px-6 pb-6">
+          <button @click="showWritingModal = false" class="w-full py-3 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5">
+            知道了
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Download Confirmation Modal -->
+    <div v-if="showDownloadConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm" @click="cancelDownload">
+      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-zen-green-100" @click.stop>
+        <div class="bg-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100 sticky top-0 z-10 backdrop-blur-md bg-white/90">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-zen-green-50 border border-zen-green-100 flex items-center justify-center text-zen-green-700">
+              <i class="fas fa-file-alt text-lg"></i>
+            </div>
+            <h3 class="text-gray-900 text-lg font-semibold">确认下载</h3>
+          </div>
+          <button @click="cancelDownload" class="text-gray-500 hover:text-gray-900 transition-colors w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="p-8">
+          <div class="text-center mb-6">
+            <div class="text-4xl mb-4 text-zen-green-600">
+              <i class="fas fa-file-download"></i>
+            </div>
+            <h4 class="text-xl font-semibold text-gray-900 mb-2">是否要下载查看文档？</h4>
+            <p class="text-gray-600 mt-2">{{ downloadFileName }}</p>
+            <p class="text-gray-500 text-sm mt-4">点击"确定"后，文件将自动下载，下载完成后请在本地打开查看完整内容</p>
+          </div>
+          <div class="flex gap-4">
+            <button @click="cancelDownload" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-xl transition-all transform hover:-translate-y-0.5">
+              不用了
+            </button>
+            <button @click="confirmDownload" class="flex-1 py-3 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5">
+              确定
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Document Detail Modal -->
     <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm" @click="showDocumentModal = false">
-      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto border border-zen-green-100" @click.stop>
+      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden border border-zen-green-100" @click.stop>
         <div class="bg-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100 sticky top-0 z-10 backdrop-blur-md bg-white/90">
           <div class="flex items-center gap-3 min-w-0">
             <div class="w-10 h-10 rounded-full bg-zen-green-50 border border-zen-green-100 flex items-center justify-center text-zen-green-700">
@@ -653,18 +823,63 @@
             <i class="fas fa-times text-lg"></i>
           </button>
         </div>
-        <div class="p-8">
-          <div class="mt-8 text-center">
+        <div class="p-8 overflow-y-auto max-h-[60vh]">
+          <!-- 加载状态 -->
+          <div v-if="isLoadingPrd" class="flex flex-col items-center justify-center py-12">
+            <div class="w-12 h-12 border-4 border-zen-green-200 border-t-zen-green-600 rounded-full animate-spin mb-4"></div>
+            <p class="text-gray-500">正在加载文档内容...</p>
+          </div>
+          <!-- PRD文档内容 -->
+          <div v-else-if="prdContent" class="prose prose-lg max-w-none">
+            <div class="text-gray-700 leading-relaxed text-sm bg-gray-50 p-6 rounded-xl" v-html="prdContent"></div>
+          </div>
+          <!-- 默认提示 -->
+          <div v-else class="mt-8 text-center">
             <p class="text-gray-500 text-sm">文档内容正在整理中，敬请期待完整版本</p>
           </div>
         </div>
-        <div class="px-6 pb-6">
+        <div class="px-6 pb-6 border-t border-zen-green-100 pt-4">
           <button @click="showDocumentModal = false" class="w-full py-3 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5">
             知道了
           </button>
         </div>
       </div>
     </div>
+
+    <!-- 角色选择模态框 -->
+    <div v-if="showRoleModal" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm" @click="closeRoleModal">
+      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-zen-green-100" @click.stop>
+        <div class="bg-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100 sticky top-0 z-10 backdrop-blur-md bg-white/90">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-zen-green-50 border border-zen-green-100 flex items-center justify-center text-zen-green-700">
+              <i class="fas fa-user-alt text-lg"></i>
+            </div>
+            <h3 class="text-gray-900 text-lg font-semibold">选择角色</h3>
+          </div>
+          <button @click="closeRoleModal" class="text-gray-500 hover:text-gray-900 transition-colors w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+        <div class="p-8">
+          <p class="text-gray-600 text-center mb-8">请选择您要查看的角色界面</p>
+          <div class="space-y-4">
+            <button @click="navigateToRolePage('doctor')" class="w-full py-4 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+              <i class="fas fa-user-md"></i>
+              <span>医生端</span>
+            </button>
+            <button @click="navigateToRolePage('family')" class="w-full py-4 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+              <i class="fas fa-users"></i>
+              <span>家属端</span>
+            </button>
+            <button @click="navigateToRolePage('elderly')" class="w-full py-4 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+              <i class="fas fa-user"></i>
+              <span>老人端</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
   </div>
 </template>
@@ -674,6 +889,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useResumeData } from './data';
 import AddModal from './components/AddModal.vue';
 import AiAssistant from './components/AiAssistant.vue';
+
 
 const { data, addItem, updateItem, deleteItem } = useResumeData();
 
@@ -837,6 +1053,8 @@ const navLinks = [
   { text: '联系', href: '#contact' },
 ];
 
+
+
 const isModalOpen = ref(false);
 const currentSection = ref('');
 const editData = ref(null);
@@ -849,9 +1067,11 @@ const currentProject = ref(null);
 
 // Photo gallery modal
 const showPhotoGallery = ref(false);
-
-// Video modal
+const showPhotoOrientationSelector = ref(false);
 const showVideoModal = ref(false);
+const showWritingModal = ref(false);
+const currentPhotoType = ref('');
+
 const photos = ref([
   "/照片作品集/3d00b1b51d31cb12e6e24bc44d592e96.jpg",
   "/照片作品集/7b90c84a5cfb218ef3b9f5f4b11f91a6.jpg",
@@ -865,11 +1085,37 @@ const photos = ref([
   "/照片作品集/930014dde0c9b5525620b079890e2454.jpg",
   "/照片作品集/f8c527ab92c586c7b9af6267e8aa354a.jpg"
 ]);
+
+const landscapePhotos = ref([
+  "/横屏照片集/1.jpg", "/横屏照片集/2.jpg", "/横屏照片集/3.jpg", "/横屏照片集/4.jpg", "/横屏照片集/5.jpg",
+  "/横屏照片集/6.jpg", "/横屏照片集/7.jpg", "/横屏照片集/8.jpg", "/横屏照片集/9.jpg", "/横屏照片集/10.jpg",
+  "/横屏照片集/11.jpg", "/横屏照片集/12.jpg", "/横屏照片集/13.jpg", "/横屏照片集/14.jpg", "/横屏照片集/15.jpg",
+  "/横屏照片集/16.jpg", "/横屏照片集/17.jpg", "/横屏照片集/18.jpg", "/横屏照片集/19.jpg", "/横屏照片集/20.jpg",
+  "/横屏照片集/21.jpg", "/横屏照片集/22.jpg", "/横屏照片集/23.jpg", "/横屏照片集/24.jpg", "/横屏照片集/25.jpg",
+  "/横屏照片集/26.jpg", "/横屏照片集/27.jpg", "/横屏照片集/28.jpg", "/横屏照片集/29.jpg", "/横屏照片集/30.jpg",
+  "/横屏照片集/31.jpg", "/横屏照片集/32.jpg", "/横屏照片集/33.jpg", "/横屏照片集/34.jpg", "/横屏照片集/35.jpg",
+  "/横屏照片集/36.jpg", "/横屏照片集/37.jpg", "/横屏照片集/38.jpg", "/横屏照片集/39.jpg", "/横屏照片集/40.jpg",
+  "/横屏照片集/41.jpg", "/横屏照片集/42.jpg", "/横屏照片集/43.jpg", "/横屏照片集/44.jpg", "/横屏照片集/45.jpg",
+  "/横屏照片集/46.jpg", "/横屏照片集/47.jpg", "/横屏照片集/48.jpg", "/横屏照片集/49.jpg", "/横屏照片集/50.jpg",
+  "/横屏照片集/51.jpg", "/横屏照片集/52.jpg", "/横屏照片集/53.jpg", "/横屏照片集/54.jpg", "/横屏照片集/55.jpg",
+  "/横屏照片集/56.jpg", "/横屏照片集/57.jpg", "/横屏照片集/58.jpg", "/横屏照片集/59.jpg", "/横屏照片集/60.jpg",
+  "/横屏照片集/61.jpg", "/横屏照片集/62.jpg"
+]);
+
+const portraitPhotos = ref([
+  "/竖屏照片集/1.jpg", "/竖屏照片集/2.jpg", "/竖屏照片集/3.jpg", "/竖屏照片集/4.jpg", "/竖屏照片集/5.jpg",
+  "/竖屏照片集/6.jpg", "/竖屏照片集/7.jpg", "/竖屏照片集/8.jpg", "/竖屏照片集/9.jpg", "/竖屏照片集/10.jpg",
+  "/竖屏照片集/11.jpg", "/竖屏照片集/12.jpg", "/竖屏照片集/13.jpg", "/竖屏照片集/14.jpg", "/竖屏照片集/15.jpg",
+  "/竖屏照片集/16.jpg", "/竖屏照片集/17.jpg", "/竖屏照片集/18.jpg", "/竖屏照片集/19.jpg", "/竖屏照片集/20.jpg"
+]);
+
 const currentPhotoIndex = ref(0);
+const prevPhotoIndex = ref(-1);
 let photoTimer = null;
 
 const startPhotoCarousel = () => {
   photoTimer = setInterval(() => {
+    prevPhotoIndex.value = currentPhotoIndex.value;
     currentPhotoIndex.value = (currentPhotoIndex.value + 1) % photos.value.length;
   }, 3000);
 };
@@ -882,13 +1128,32 @@ const stopPhotoCarousel = () => {
 };
 
 const openPhotoGallery = () => {
+  showPhotoOrientationSelector.value = true;
+  prevPhotoIndex.value = -1;
+};
+
+const selectPhotoOrientation = (orientation) => {
+  currentPhotoType.value = orientation;
+  if (orientation === 'landscape') {
+    photos.value = landscapePhotos.value;
+  } else {
+    photos.value = portraitPhotos.value;
+  }
+  currentPhotoIndex.value = 0;
+  prevPhotoIndex.value = -1;
+  showPhotoOrientationSelector.value = false;
   showPhotoGallery.value = true;
-  startPhotoCarousel();
+};
+
+const closePhotoOrientationSelector = () => {
+  showPhotoOrientationSelector.value = false;
 };
 
 const closePhotoGallery = () => {
   showPhotoGallery.value = false;
+  showPhotoOrientationSelector.value = false;
   stopPhotoCarousel();
+  isAutoPlaying.value = false;
 };
 
 const openVideoGallery = () => {
@@ -896,22 +1161,89 @@ const openVideoGallery = () => {
   showVideoModal.value = true;
 };
 
+const openWritingGallery = () => {
+  // 显示友好的提示弹窗
+  showWritingModal.value = true;
+};
+
 // Document modal
 const showDocumentModal = ref(false);
 const currentDocumentType = ref('');
 const currentDocumentProject = ref('');
+const prdContent = ref('');
+const isLoadingPrd = ref(false);
+
+// Download confirmation modal
+const showDownloadConfirmModal = ref(false);
+const downloadFileName = ref('');
+
 const openDocumentModal = (type, project) => {
   currentDocumentType.value = type;
   currentDocumentProject.value = project;
-  showDocumentModal.value = true;
+  
+  // 显示下载确认模态框
+  if (project.includes('养老健康服务平台')) {
+    let fileName = '';
+    if (type === '需求文档') {
+      fileName = '养老健康服务平台PRD文档 (1).docx';
+    } else if (type === '产品设计文档') {
+      fileName = '养老健康服务平台产品设计文档 (1).docx';
+    }
+
+    downloadFileName.value = fileName;
+    showDownloadConfirmModal.value = true;
+  } else {
+    prdContent.value = '文档内容正在整理中，敬请期待完整版本';
+    showDocumentModal.value = true;
+  }
+};
+
+const confirmDownload = () => {
+  // 确认下载
+  const link = document.createElement('a');
+  link.href = `http://localhost:3000/${downloadFileName.value}`;
+  link.download = downloadFileName.value;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  // 关闭确认模态框
+  showDownloadConfirmModal.value = false;
+};
+
+const cancelDownload = () => {
+  // 取消下载，关闭确认模态框
+  showDownloadConfirmModal.value = false;
 };
 
 const nextPhoto = () => {
+  prevPhotoIndex.value = currentPhotoIndex.value;
   currentPhotoIndex.value = (currentPhotoIndex.value + 1) % photos.value.length;
 };
 
 const prevPhoto = () => {
+  prevPhotoIndex.value = currentPhotoIndex.value;
   currentPhotoIndex.value = (currentPhotoIndex.value - 1 + photos.value.length) % photos.value.length;
+};
+
+const isAutoPlaying = ref(false);
+
+const zoomPhoto = () => {
+  const img = document.querySelector('.cursor-zoom-in');
+  if (img) {
+    img.classList.toggle('scale-150');
+    img.classList.toggle('transition-transform');
+    img.classList.toggle('duration-300');
+  }
+};
+
+const toggleAutoPlay = () => {
+  isAutoPlaying.value = !isAutoPlaying.value;
+  if (isAutoPlaying.value) {
+    startPhotoCarousel();
+  } else {
+    stopPhotoCarousel();
+  }
 };
 
 
@@ -1191,6 +1523,36 @@ const panTranscriptOnMove = (event) => {
   if (maxLeft > 0) el.scrollLeft = maxLeft * Math.min(Math.max(x, 0), 1);
   if (maxTop > 0) el.scrollTop = maxTop * Math.min(Math.max(y, 0), 1);
 };
+
+// 角色选择模态框
+const showRoleModal = ref(false);
+
+const openRoleModal = () => {
+  showRoleModal.value = true;
+};
+
+const closeRoleModal = () => {
+  showRoleModal.value = false;
+};
+
+const navigateToRolePage = (role) => {
+  let url = '';
+  switch (role) {
+    case 'doctor':
+      url = 'http://localhost:3000/templates/医生问诊.html';
+      break;
+    case 'family':
+      url = 'http://localhost:3000/templates/异常预警.html';
+      break;
+    case 'elderly':
+      url = 'http://localhost:3000/templates/健康数据录入.html';
+      break;
+    default:
+      url = 'http://localhost:3000/养老健康服务平台首页.html';
+  }
+  window.open(url, '_blank');
+  closeRoleModal();
+};
 </script><style>
 html {
   scroll-behavior: smooth;
@@ -1226,6 +1588,42 @@ html {
 
 .animate-pulse-slow:hover {
   animation: none;
+}
+
+/* 技能标签动画效果 */
+@keyframes skill-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes skill-click {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 技能标签样式 */
+.group {
+  animation: skill-enter 0.5s ease-out forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 技能标签进入动画延迟 */
+.group {
+  animation: skill-enter 0.5s ease-out forwards;
 }
 </style>
 

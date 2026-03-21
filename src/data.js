@@ -6,10 +6,10 @@ const defaultData = {
     title: "软件工程 | 产品实习生",
     bio: "具备良好的产品思维与技术背景，能以技术视角理解产品落地逻辑，独立完成从「用户痛点调研→需求拆解→原型设计→开发跟进→功能验证」的全流程产品工作。主导 2 个健康领域产品从 0 到 1 的原型输出与需求落地，通过用户访谈、数据分析推动核心功能迭代，实现用户满意度 88%、操作流畅度提升 60% 的业务成果。逻辑清晰，注重用户体验与商业价值的平衡，同时主动学习 AIGC 在产品设计中的应用，能快速适配不同业务场景的产品迭代需求。",
     email: "zhengyun_0629@qq.com",
-    phone: "13368969405",
-    location: "深圳、杭州",
-    avatar: "/1.png",
-    avatarList: ["/1.png", "/2.png", "/3.png", "/4.png", "/5.png", "/6.png", "/7.png", "/8.png", "/9.png"]
+    phone: "2746747178",
+    location: "深圳、杭州、苏州、宁波",
+    avatar: "/头像轮播图/1.png",
+    avatarList: ["/头像轮播图/1.png", "/头像轮播图/2.png", "/头像轮播图/3.png", "/头像轮播图/4.png", "/头像轮播图/5.png", "/头像轮播图/6.png", "/头像轮播图/7.png", "/头像轮播图/8.png", "/头像轮播图/9.png"]
   },
   education: [
     {
@@ -27,7 +27,10 @@ const defaultData = {
       company: "深圳量云能源网络科技有限公司",
       role: "产品实习生",
       period: "2026/01-至今",
-      description: "1. 为保障能源电力交易数据高效对接，协助产品经理完成数据源收集与模板整理，参与跨部门沟通，保障对接流程顺畅\n2. 为明确业务边界，系统学习自研产品平台业务，梳理核心功能模块与流程，形成良好业务认知框架\n3. 为支撑 AI 功能迭代规划，调研主流 AI 技术与竞品应用，输出调研分析报告与业务流程图，为产品规划提供参考\n4. 为验证 AI 方案可行性，撰写产品方案并通过 vibe coding 开发前端交互原型，辅助方案沟通与评审\n5. 为探索智能化方向，学习 AI 智能体技术概念，探索其在能源电力交易场景的潜在应用方向"
+      description: "1.为保障能源电力交易数据高效对接，协助产品经理完成 <strong>SaaS 平台</strong> 数据源收集与模板整理，学习并理解部门产品业务，<strong>熟悉前端页面交互与数据流转流程</strong>，参与跨部门沟通，保障数据对接流程顺畅。\n" +
+          "2.为支撑 AI 功能赋能产品规划，调研主流 AI 技术与竞品应用，输出调研分析报告与业务流程图，为产品功能规划与技术可行性评估提供参考。\n" +
+          "3.为验证 AI 方案可行性，撰写产品方案，<strong>通过 vibe coding 开发前端交互原型演示demo</strong>，对齐技术实现逻辑，辅助方案沟通与评审，提升方案说服力与落地性。\n" +
+          "4.为探索智能化方向，学习 <strong>AI 智能体</strong> 技术概念，结合 <strong>前端业务场景与代码实现特点</strong>，探索其在能源电力交易场景的潜在应用方向，输出智能化场景建议。"
     }
   ],
   projects: [
@@ -36,7 +39,11 @@ const defaultData = {
       title: "智能健康饮食系统",
       role: "产品负责人",
       period: "2025/06-2025/07",
-      description: "需求挖掘与定位: 基于外卖商战内卷背景下，通过用户调研和竞品分析，发现年轻用户“饮食搭配不合理、健康需求难满足”的痛点，明确“个性化精准推荐 + 营养师 1v1 服务”的产品定位，覆盖健康数据管理、个性化饮食推荐、营养师服务三大核心模块。\nAI 应用与用户体验优化: 调用ollama大模型 API，完成业务场景封装（包括后端接口调用、健康场景 Prompt 工程设计、AI 生成结果与用户健康数据的联动处理），实现个性化饮食方案的自动生成；同时主导核心流程迭代，将用户生成饮食方案的操作步骤从 8 步精简至 3 步，操作时长从 3 分钟缩短到 1 分钟，用户操作满意度提升至 88%；依托大模型搭建饮食健康智能问答功能，减轻人工咨询压力，推动营养师咨询入口从个人中心移至方案详情页，使模块使用率提升 40%。\n跨团队协作与落地: 协调团队对齐需求，解决 AI 推荐精准度不足、技术实现难点等问题，推动功能 100% 落地；独立输出 PRD、接口文档、用户操作手册等 10 + 份核心文档，保障信息对齐。\n数据驱动迭代: 通过埋点追踪用户行为，发现 AI 推荐采纳率仅 40%，推动大模型 Prompt 优化，最终采纳率提升至 72%；同步优化服务分配机制，将营养师平均响应时间从 15 分钟缩短至 5 分钟，服务满意度提升至 92%。\n技术方案落地: 推动集成 AI 推荐与 Redis 缓存技术，将平台平均加载时间控制在 1.5 秒内，线上 Bug 率低于 5%，保障产品稳定运行。",
+      description: "需求挖掘与定位 ：针对\"外卖商战内卷\"背景下年轻用户\"外卖饮食搭配不合理、营养摄入不均衡、部分群体对于健康饮食需求\"的情况下，明确\"AI饮食分析+营养师专业服务\"的产品定位，覆盖饮食记录管理、AI饮食分析、营养师服务等核心模块。\n" +
+          "AI应用与用户体验优化 ：调用大模型API，完成Prompt工程设计与业务场景封装，实现AI饮食分析报告自动生成；主导核心流程迭代，将用户记录饮食操作步骤从8步精简至3步，操作时长从3分钟缩短至1分钟，用户满意度提升至88%；搭建饮食健康智能问答功能，减轻人工咨询压力。\n" +
+          "跨团队协作与落地 ：协调团队解决AI结果解析、Redis缓存策略等技术难点，推动饮食记录、AI分析、营养师服务等核心功能落地；输出PRD、接口文档等10+份核心文档，建立前后端协作规范。\n" +
+          "数据驱动迭代 ：通过埋点追踪用户行为，发现AI分析结果采纳率较低，优化Prompt模板后显著提升；同步优化营养师服务流程，提升服务响应效率和用户满意度。\n" +
+          "技术方案落地 ：集成大模型API与Redis缓存技术，平台平均加载时间控制在1.5秒内，线上Bug率低于5%，保障产品稳定运行。",
       image: "/智能健康饮食系统.png"
     },
     {
@@ -53,30 +60,40 @@ const defaultData = {
     { id: 2, name: "CET-6", image: "/CET-6(460).png" },
     { id: 3, name: "CET-4", image: "/CET-4(491).png" },
     { id: 4, name: "驾驶证", image: "" },
-    { id: 5, name: "普通话二甲", image: "" }
+    { id: 5, name: "普通话二甲", image: "/普通话证书.png" }
   ],
   skills: [
     { name: "vibe coding", level: 80 },
-    { name: "日常剪辑", level: 75 },
-    { name: "Vue3/HTML/CSS/JS", level: 85 },
-    { name: "Java/Spring Boot", level: 80 },
-    { name: "SQL/MYSQL/ORACLE/SQL SERVER", level: 75 },
-    { name: "Cursor/豆包/deepseek/gemini", level: 85 },
-    { name: "Excel/PPT/Word", level: 80 },
+    { name: "Cursor/TRAE", level: 80 },
     { name: "Figma/Axure", level: 75 },
-    { name: "Processon/Xmind/Visio", level: 80 },
-    { name: "PRD/用户操作手册/接口文档/需求调研报告", level: 85 },
-    { name: "敏捷开发流程", level: 80 }
+    { name: "Processon/Xmind/Visio", level: 85 },
+    { name: "Excel/PPT/Word", level: 80 },
+    { name: "Vue3/HTML/CSS/JS", level: 75 },
+    { name: "Java/Spring Boot", level: 85 },
+    { name: "敏捷开发(mvp迭代)", level: 80 },
+    { name: "RAG", level: 75 },
+    { name: "Prompt", level: 80 },
+    { name: "Coze", level: 85 },
+    { name: "AI Workflow", level: 80 },
+    { name: "Agent", level: 80 },
+    { name: "大模型应用", level: 80 },
+    { name: "AIGC", level: 80 },
+    { name: "Power BI", level: 80 },
+    { name: "SQL", level: 80 },
+    { name: "Git", level: 80 },
+    { name: "SQL", level: 80 },
+    { name: "PRD", level: 80 }
+
   ],
   portfolio: [
-    { id: 1, title: "练习作品集", url: "https://www.figma.com/design/go7j4Nf3wfWd2XYmCI2MRT/%E2%80%9D%E8%BD%BB%E4%BA%AB%E7%94%9F%E6%B4%BB%E2%80%9Capp%E7%BB%83%E4%B9%A0%E9%A1%B9%E7%9B%AE?node-id=0-1&t=sVzlYk1HZ4wMU6L8-1", description: "‘轻享生活’app练习项目" },
-    { id: 2, title: "养老健康服务平台原型集合", url: "https://www.figma.com/design/Fp1BFLciB8TlBZSSKqGmcq/%E5%85%BB%E8%80%81%E5%81%A5%E5%BA%B7%E6%9C%8D%E5%8A%A1%E5%B9%B3%E5%8F%B0?node-id=1-83&t=DH7ltQEPuVqHjyOX-1", description: "养老健康服务平台的完整原型设计" },
-    { id: 3, title: "智能健康系统原型集合", url: "https://www.figma.com/design/yPQAJ4op5TFpmkTrPaw1A9/%E6%99%BA%E8%83%BD%E5%81%A5%E5%BA%B7%E9%A5%AE%E9%A3%9F%E7%B3%BB%E7%BB%9F?node-id=0-1&t=ssMv3xinZlHeBCVg-1", description: "智能健康饮食系统的完整原型设计" },
+    { id: 1, title: "练习作品集", url: "https://www.figma.com/design/go7j4Nf3wfWd2XYmCI2MRT/%E2%80%9D%E8%BD%BB%E4%BA%AB%E7%94%9F%E6%B4%BB%E2%80%9Capp%E7%BB%83%E4%B9%A0%E9%A1%B9%E7%9B%AE?node-id=0-1&t=sVzlYk1HZ4wMU6L8-1", description: "‘轻享生活'app figma练习项目" },
+    { id: 2, title: "养老健康服务平台前端功能原型演示", url: "/养老健康服务平台首页.html", description: "养老健康服务平台项目的MVP核心功能（健康数据录入+健康数据管理+健康趋势分析+风险健康评估+异常预警（家属端）+在线咨询+医生问诊+健康资讯推送）" },
+    { id: 3, title: "智能健康系统原型集合", url: "https://www.figma.com/design/yPQAJ4op5TFpmkTrPaw1A9/%E6%99%BA%E8%83%BD%E5%81%A5%E5%BA%B7%E9%A5%AE%E9%A3%9F%E7%B3%BB%E7%BB%9F?node-id=0-1&t=ssMv3xinZlHeBCVg-1", description: "智能健康饮食系统项目的figma部分原型设计" },
     { id: 4, title: "前端功能原型演示", url: "/前端演示功能交互/4.html", description: "电力交易平台-AI智能助手（HTML Demo）" }
   ],
   interests: [
-    "摄影: 熟练使用后期软件进行后期调色与构图优化，具备较强审美能力与细节把控力，可辅助产品截图美化、活动海报设计等宣传材料制作。",
-    "随笔写作: 善于用文字记录思考与观察，撰写技术随笔、复盘报告，注重逻辑性与表达深度。能助力需求业务文档、复盘报告撰写，提升文档质量",
+    "摄影: 善于使用后期软件进行后期调色与构图优化，具备良好的审美能力与细节把控力，可辅助产品设计等内容。",
+    "随笔写作: 善于用文字记录思考与观察，注重逻辑性与表达深度。能助力需求业务文档、复盘报告撰写，提升文档质量",
     "视频创作: 具备视频拍摄与剪辑能力，能够制作产品演示、教程解说等视频内容。持续积累视频作品，打造个人视频作品集。"
   ]
 };
