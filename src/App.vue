@@ -7,9 +7,54 @@
           <i class="fas fa-leaf text-zen-green-500"></i>
           <span>{{ data.profile.name }}</span>
         </div>
-        <ul class="hidden md:flex space-x-8 text-sm font-medium text-gray-600">
+        <ul class="hidden md:flex space-x-8 text-sm font-medium text-gray-600 items-center">
           <li v-for="link in navLinks" :key="link.href">
             <a :href="link.href" class="hover:text-zen-green-600 transition-colors py-2 border-b-2 border-transparent hover:border-zen-green-400">{{ link.text }}</a>
+          </li>
+          <!-- 下载简历下拉菜单 -->
+          <li class="relative" @mouseenter="showResumeDropdown = true" @mouseleave="showResumeDropdown = false">
+            <button
+              type="button"
+              class="hover:text-zen-green-600 transition-colors py-2 border-b-2 border-transparent hover:border-zen-green-400 flex items-center gap-1"
+              @click="showResumeDropdown = !showResumeDropdown"
+            >
+              <i class="fas fa-download text-xs"></i>
+              下载简历
+              <i class="fas fa-chevron-down text-xs transition-transform" :class="showResumeDropdown ? 'rotate-180' : ''"></i>
+            </button>
+            <!-- 下拉选项 -->
+            <transition
+              enter-active-class="transition duration-200 ease-out"
+              enter-from-class="opacity-0 translate-y-1"
+              enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 translate-y-1"
+            >
+              <div
+                v-if="showResumeDropdown"
+                class="absolute top-full left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-zen-green-100 py-2 z-50"
+              >
+                <a
+                  href="/郑筠_产品.jpeg"
+                  download
+                  class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-zen-green-50 hover:text-zen-green-700 transition-colors"
+                  @click="showResumeDropdown = false"
+                >
+                  <i class="fas fa-image text-zen-green-500"></i>
+                  <span>PNG 图片版</span>
+                </a>
+                <a
+                  href="/郑筠_产品.pdf"
+                  download
+                  class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-zen-green-50 hover:text-zen-green-700 transition-colors"
+                  @click="showResumeDropdown = false"
+                >
+                  <i class="fas fa-file-pdf text-red-500"></i>
+                  <span>PDF 文档版</span>
+                </a>
+              </div>
+            </transition>
           </li>
         </ul>
         <button class="md:hidden text-gray-600 hover:text-zen-green-600">
@@ -1056,6 +1101,7 @@ const navLinks = [
 
 
 const isModalOpen = ref(false);
+const showResumeDropdown = ref(false);
 const currentSection = ref('');
 const editData = ref(null);
 const deleteMode = ref(null);
