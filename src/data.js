@@ -116,8 +116,11 @@ export const useResumeData = () => {
   if (Array.isArray(initialData.certificates)) {
     const certImageMap = {
       "软件设计师（软考中级）": "/软件设计师（软考中级).png",
+      "CET-6": "/CET-6(460).png",
       "CET-6(460)": "/CET-6(460).png",
+      "CET-4": "/CET-4(491).png",
       "CET-4(491)": "/CET-4(491).png",
+      "普通话二甲": "/普通话证书.png",
     };
     initialData.certificates = initialData.certificates.map((cert) => {
       if (!cert || typeof cert !== 'object') return cert;
