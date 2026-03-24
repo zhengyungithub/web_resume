@@ -10,7 +10,7 @@ const callCozeWorkflow = async (question) => {
   
   // 工作流 API 请求体
   const requestBody = {
-    workflow_id: "7617082079243649066",
+    workflow_id: "7620101882899824655",
     parameters: {
       input: questionStr
     }
@@ -66,7 +66,11 @@ const handleWorkflowStreamingResponse = async (res, cozeResponse) => {
                   const contentJson = JSON.parse(data.content);
                   console.log('解析 content JSON：', contentJson);
                   
-                  // 收集所有输出字段
+                  // 收集所有输出字段（兼容新旧格式）
+                  if (typeof contentJson?.answer1 === 'string' && contentJson.answer1.trim() !== '') {
+                    allOutputs.answer1 = contentJson.answer1;
+                    console.log('找到工作流输出 answer1：', contentJson.answer1);
+                  }
                   if (typeof contentJson?.output_pro === 'string' && contentJson.output_pro.trim() !== '') {
                     allOutputs.output_pro = contentJson.output_pro;
                     console.log('找到工作流输出 output_pro：', contentJson.output_pro);
@@ -144,23 +148,14 @@ const handleWorkflowStreamingResponse = async (res, cozeResponse) => {
     
     console.log('收集到的所有输出字段：', allOutputs);
     
-    // 按照Coze工作流的输出字段顺序拼接所有内容
-    const outputOrder = ['output_pro', 'output_greet', 'output_contact', 'output_guide', 'greeting', 'project', 'contact', 'guide', 'invalid', 'output_invalid', 'content', 'text'];
+    // 直接返回所有字段，不做拼接和过滤
+    const allFields = Object.entries(allOutputs).map(([key, value]) => {
+      return `${key}: ${value}`;
+    }).join('\n\n');
     
-    for (const field of outputOrder) {
-      if (allOutputs[field] && typeof allOutputs[field] === 'string' && allOutputs[field].trim() !== '') {
-        if (replyText) {
-          replyText += '\n\n' + allOutputs[field];
-        } else {
-          replyText = allOutputs[field];
-        }
-        console.log('添加字段到回答：', field, '内容：', allOutputs[field]);
-      }
-    }
+    console.log('工作流流式响应处理完成，所有字段：', allFields);
     
-    console.log('工作流流式响应处理完成，最终回答：', replyText);
-    
-    return replyText;
+    return allFields;
   } catch (error) {
     console.error('处理工作流流式响应失败：', error);
     throw error;
@@ -190,8 +185,8 @@ export const createChatRouter = () => {
         throw new Error('Coze 工作流未返回任何回答');
       }
       
-      reply = reply.replace(/^\s*#+\s*/gm, '');
-      console.log('处理后的回答：', reply);
+      // 取消过滤，直接使用原始文本
+      console.log('原始回答：', reply);
       
       res.setHeader('Content-Type', 'application/json');
       

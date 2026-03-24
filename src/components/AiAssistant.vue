@@ -734,12 +734,36 @@ const callChatApi = async (q) => {
       throw new Error('Coze 工作流未返回任何回答');
     }
     
-    const filteredText = filterAnchors(replyText);
-    console.log('过滤后的文本长度：', filteredText.length);
-    console.log('过滤后的文本内容：', filteredText);
+    // 解析各个字段并输出到控制台
+    const fields = replyText.split('\n\n').reduce((acc, line) => {
+      const [key, ...valueParts] = line.split(':');
+      if (key && valueParts.length > 0) {
+        acc[key.trim()] = valueParts.join(':').trim();
+      }
+      return acc;
+    }, {});
+    
+    console.log('========== Coze 返回的字段内容 ==========');
+    console.log('output_pro:', fields['output_pro'] || '');
+    console.log('output_greet:', fields['output_greet'] || '');
+    console.log('output_contact:', fields['output_contact'] || '');
+    console.log('output_guide:', fields['output_guide'] || '');
+    console.log('output_invalid:', fields['output_invalid'] || '');
+    console.log('greeting:', fields['greeting'] || '');
+    console.log('project:', fields['project'] || '');
+    console.log('contact:', fields['contact'] || '');
+    console.log('guide:', fields['guide'] || '');
+    console.log('invalid:', fields['invalid'] || '');
+    console.log('content:', fields['content'] || '');
+    console.log('text:', fields['text'] || '');
+    console.log('==========================================');
+    
+    // 取消过滤，直接使用原始文本
+    console.log('原始文本长度：', replyText.length);
+    console.log('原始文本内容：', replyText);
     
     return {
-      text: filteredText,
+      text: replyText,
       citations: Array.isArray(data?.citations) && data.citations.length ? data.citations : [],
       actions: []
     };
