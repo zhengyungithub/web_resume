@@ -389,7 +389,12 @@
            :style="{ top: popupPosition.y + 'px', left: popupPosition.x + 'px' }"
            @mouseenter="cancelHideCertificateImage"
            @mouseleave="hideCertificateImage">
-        <img v-if="currentCertificate.image" :src="currentCertificate.image" :alt="currentCertificate.name" class="max-w-full h-auto rounded-lg cursor-zoom-in" loading="lazy" decoding="async" @click.stop="openCertificateZoom(currentCertificate)">
+        <img v-if="currentCertificate.image" 
+             :src="currentCertificate.image" 
+             :alt="currentCertificate.name" 
+             class="max-w-full h-auto rounded-lg cursor-zoom-in" 
+             @click.stop="openCertificateZoom(currentCertificate)"
+             @error="console.error('证书图片加载失败:', currentCertificate.image)">
         <div v-else class="text-gray-500 text-center py-8">暂无证书图片</div>
       </div>
       
@@ -1481,6 +1486,7 @@ const showTranscriptZoom = ref(false);
 const transcriptImage = '/成绩单.png';
 
 const showCertificateImage = (cert, event) => {
+  console.log('显示证书:', cert);
   if (certificateHideTimer) {
     clearTimeout(certificateHideTimer);
     certificateHideTimer = null;
