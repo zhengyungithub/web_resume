@@ -66,50 +66,22 @@ const handleWorkflowStreamingResponse = async (res, cozeResponse) => {
                   const contentJson = JSON.parse(data.content);
                   console.log('解析 content JSON：', contentJson);
                   
-                  // 收集所有输出字段（兼容新旧格式）
-                  if (typeof contentJson?.answer1 === 'string' && contentJson.answer1.trim() !== '') {
-                    allOutputs.answer1 = contentJson.answer1;
-                    console.log('找到工作流输出 answer1：', contentJson.answer1);
+                  // 收集所有非空输出字段（answer1-answer9 格式）
+                  for (let i = 1; i <= 9; i++) {
+                    const key = `answer${i}`;
+                    if (contentJson?.[key] && typeof contentJson[key] === 'string' && contentJson[key].trim() !== '') {
+                      allOutputs[key] = contentJson[key];
+                      console.log(`找到工作流输出 ${key}：`, contentJson[key]);
+                    }
                   }
-                  if (typeof contentJson?.output_pro === 'string' && contentJson.output_pro.trim() !== '') {
-                    allOutputs.output_pro = contentJson.output_pro;
-                    console.log('找到工作流输出 output_pro：', contentJson.output_pro);
-                  }
-                  if (typeof contentJson?.output_greet === 'string' && contentJson.output_greet.trim() !== '') {
-                    allOutputs.output_greet = contentJson.output_greet;
-                    console.log('找到工作流输出 output_greet：', contentJson.output_greet);
-                  }
-                  if (typeof contentJson?.output_contact === 'string' && contentJson.output_contact.trim() !== '') {
-                    allOutputs.output_contact = contentJson.output_contact;
-                    console.log('找到工作流输出 output_contact：', contentJson.output_contact);
-                  }
-                  if (typeof contentJson?.output_guide === 'string' && contentJson.output_guide.trim() !== '') {
-                    allOutputs.output_guide = contentJson.output_guide;
-                    console.log('找到工作流输出 output_guide：', contentJson.output_guide);
-                  }
-                  if (typeof contentJson?.greeting === 'string' && contentJson.greeting.trim() !== '') {
-                    allOutputs.greeting = contentJson.greeting;
-                    console.log('找到工作流输出 greeting：', contentJson.greeting);
-                  }
-                  if (typeof contentJson?.project === 'string' && contentJson.project.trim() !== '') {
-                    allOutputs.project = contentJson.project;
-                    console.log('找到工作流输出 project：', contentJson.project);
-                  }
-                  if (typeof contentJson?.contact === 'string' && contentJson.contact.trim() !== '') {
-                    allOutputs.contact = contentJson.contact;
-                    console.log('找到工作流输出 contact：', contentJson.contact);
-                  }
-                  if (typeof contentJson?.guide === 'string' && contentJson.guide.trim() !== '') {
-                    allOutputs.guide = contentJson.guide;
-                    console.log('找到工作流输出 guide：', contentJson.guide);
-                  }
-                  if (typeof contentJson?.invalid === 'string' && contentJson.invalid.trim() !== '') {
-                    allOutputs.invalid = contentJson.invalid;
-                    console.log('找到工作流输出 invalid：', contentJson.invalid);
-                  }
-                  if (typeof contentJson?.output_invalid === 'string' && contentJson.output_invalid.trim() !== '') {
-                    allOutputs.output_invalid = contentJson.output_invalid;
-                    console.log('找到工作流输出 output_invalid：', contentJson.output_invalid);
+                  
+                  // 兼容旧格式字段
+                  const oldFields = ['output_pro', 'output_greet', 'output_contact', 'output_guide', 'greeting', 'project', 'contact', 'guide', 'invalid', 'output_invalid'];
+                  for (const key of oldFields) {
+                    if (contentJson?.[key] && typeof contentJson[key] === 'string' && contentJson[key].trim() !== '') {
+                      allOutputs[key] = contentJson[key];
+                      console.log(`找到工作流输出 ${key}：`, contentJson[key]);
+                    }
                   }
                 } catch (jsonError) {
                   console.log('解析 content JSON 失败：', jsonError);
@@ -148,9 +120,23 @@ const handleWorkflowStreamingResponse = async (res, cozeResponse) => {
     
     console.log('收集到的所有输出字段：', allOutputs);
     
+    // 处理输出字段，去除 answerX: 前缀和 # 号
+    const processedOutputs = {};
+    for (const [key, value] of Object.entries(allOutputs)) {
+      // 去除 answerX: 前缀
+      let processedValue = value;
+      if (key.startsWith('answer') && /answer\d+/.test(key)) {
+        // 移除开头的 answerX: 格式
+        processedValue = value.replace(/^answer\d+:\s*/i, '');
+      }
+      // 去除所有 # 号（Markdown 标题标记）
+      processedValue = processedValue.replace(/#/g, '');
+      processedOutputs[key] = processedValue;
+    }
+    
     // 直接返回所有字段，不做拼接和过滤
-    const allFields = Object.entries(allOutputs).map(([key, value]) => {
-      return `${key}: ${value}`;
+    const allFields = Object.entries(processedOutputs).map(([key, value]) => {
+      return `${value}`;
     }).join('\n\n');
     
     console.log('工作流流式响应处理完成，所有字段：', allFields);

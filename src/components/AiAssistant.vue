@@ -232,12 +232,12 @@ const lead = ref(null);
 const showShortcuts = ref(false);
 
 const guideSections = computed(() => [
-  { key: 'about', titleZh: '关于我', titleEn: 'About', href: '#about' },
+  { key: 'intro', titleZh: '介绍一下', titleEn: 'Introduce', href: '#about' },
   { key: 'projects', titleZh: '项目经历', titleEn: 'Projects', href: '#projects' },
   { key: 'certificates', titleZh: '证书', titleEn: 'Certificates', href: '#certificates' },
   { key: 'skills', titleZh: '技能', titleEn: 'Skills', href: '#skills-list' },
   { key: 'interests', titleZh: '兴趣特长', titleEn: 'Interests', href: '#interests' },
-  { key: 'visitor', titleZh: '访客互动', titleEn: 'Visitor', href: '#visitor' }
+  { key: 'portfolio', titleZh: '作品集', titleEn: 'Portfolio', href: '#visitor' }
 ]);
 
 const messages = ref([]);
@@ -246,11 +246,11 @@ const showGuide = computed(() => messages.value.length === 0 || (messages.value.
 const showShortcutsArea = computed(() => showGuide.value || showShortcuts.value);
 
 const quickPrompts = computed(() => [
-  { key: 'top_projects', labelZh: '介绍你最强的3个项目', labelEn: 'Top 3 projects', queryZh: '最强的3个项目', queryEn: 'top 3 projects' },
-  { key: 'fit_role', labelZh: '你适合什么岗位/方向', labelEn: 'Best-fit roles', queryZh: '你适合什么岗位', queryEn: 'what roles do you fit' },
-  { key: 'stack', labelZh: '给我你的技术栈', labelEn: 'Your tech stack', queryZh: '技术栈', queryEn: 'tech stack' },
-  { key: 'contact', labelZh: '如何联系你', labelEn: 'How to contact you', queryZh: '如何联系', queryEn: 'contact' },
-  { key: 'leave_message', labelZh: '我想合作/交流，怎么留言', labelEn: 'Leave a message', queryZh: '我想合作/交流，怎么留言', queryEn: 'leave a message' }
+  { key: 'projects', labelZh: '介绍一下你的项目经历', labelEn: 'Tell me about your projects', queryZh: '介绍一下你的项目经历', queryEn: 'tell me about your projects' },
+  { key: 'skills', labelZh: '你有什么技能证书', labelEn: 'What skills and certificates', queryZh: '你有什么技能证书', queryEn: 'what skills and certificates do you have' },
+  { key: 'internship', labelZh: '你在量云能源的实习经历', labelEn: 'Your internship experience', queryZh: '你在量云能源的实习经历', queryEn: 'your internship experience' },
+  { key: 'contact', labelZh: '怎么联系你', labelEn: 'How to contact you', queryZh: '怎么联系你', queryEn: 'how to contact you' },
+  { key: 'interests', labelZh: '你的兴趣爱好是什么', labelEn: 'What are your interests', queryZh: '你的兴趣爱好是什么', queryEn: 'what are your interests' }
 ]);
 
 const copyToClipboard = async (text) => {
@@ -743,20 +743,7 @@ const callChatApi = async (q) => {
       return acc;
     }, {});
     
-    console.log('========== Coze 返回的字段内容 ==========');
-    console.log('output_pro:', fields['output_pro'] || '');
-    console.log('output_greet:', fields['output_greet'] || '');
-    console.log('output_contact:', fields['output_contact'] || '');
-    console.log('output_guide:', fields['output_guide'] || '');
-    console.log('output_invalid:', fields['output_invalid'] || '');
-    console.log('greeting:', fields['greeting'] || '');
-    console.log('project:', fields['project'] || '');
-    console.log('contact:', fields['contact'] || '');
-    console.log('guide:', fields['guide'] || '');
-    console.log('invalid:', fields['invalid'] || '');
-    console.log('content:', fields['content'] || '');
-    console.log('text:', fields['text'] || '');
-    console.log('==========================================');
+
     
     // 取消过滤，直接使用原始文本
     console.log('原始文本长度：', replyText.length);
