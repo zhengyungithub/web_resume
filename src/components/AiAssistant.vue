@@ -84,14 +84,14 @@
                    <i v-else class="fas fa-user text-zen-green-600 text-xs"></i>
                 </div>
 
-                <div>
+                <div class="max-w-[calc(100%-48px)]">
                   <div
-                    class="rounded-2xl px-5 py-3.5 text-[15px] leading-relaxed shadow-sm relative group transition-all"
+                    class="rounded-2xl px-5 py-3.5 text-[15px] leading-relaxed shadow-sm relative group transition-all overflow-hidden"
                     :class="m.role === 'user'
                       ? 'bg-zen-green-600 text-white rounded-tr-sm hover:shadow-md'
                       : 'bg-white text-gray-800 border border-gray-100 rounded-tl-sm hover:shadow-md'"
                   >
-                    <div class="whitespace-pre-line">{{ m.text }}</div>
+                    <div class="whitespace-pre-line break-words">{{ m.text }}</div>
                   </div>
 
                   <div v-if="m.actions?.length" class="mt-3 flex flex-wrap gap-2 pl-1">
