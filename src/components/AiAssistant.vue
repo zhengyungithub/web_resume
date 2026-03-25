@@ -88,7 +88,7 @@
                   <div
                     class="rounded-2xl px-5 py-3.5 text-[15px] leading-relaxed shadow-sm relative group transition-all overflow-hidden"
                     :class="m.role === 'user'
-                      ? 'bg-zen-green-600 text-white rounded-tr-sm hover:shadow-md'
+                      ? 'bg-zen-green-600 text-white rounded-tr-sm hover:shadow-md whitespace-nowrap'
                       : 'bg-white text-gray-800 border border-gray-100 rounded-tl-sm hover:shadow-md'"
                   >
                     <div class="whitespace-pre-line break-words">{{ m.text }}</div>
