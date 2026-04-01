@@ -930,7 +930,24 @@
       </div>
     </div>
 
+    <!-- 侧边悬浮按钮 -->
+    <div class="fixed right-6 bottom-6 z-40">
+      <button
+        @click="openAiAssistant"
+        class="w-14 h-14 rounded-full bg-gradient-to-br from-zen-green-500 to-zen-green-600 text-white shadow-lg hover:shadow-2xl hover:shadow-zen-green-200/50 transition-all transform hover:scale-110 flex items-center justify-center group"
+        title="AI 助手"
+      >
+        <i class="fas fa-robot text-xl group-hover:animate-bounce"></i>
+      </button>
+    </div>
 
+    <AiAssistant
+      ref="aiAssistantRef"
+      :resume-data="data"
+      :visitor-form-endpoint="visitorFormEndpoint"
+      :is-visitor-form-configured="isVisitorFormConfigured"
+      @open-project="openProjectDetail"
+    />
   </div>
 </template>
 
