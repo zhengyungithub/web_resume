@@ -209,6 +209,17 @@
         </div>
       </div>
     </div>
+    
+    <!-- Word Cloud Button -->
+    <div class="fixed left-6 bottom-6 z-40">
+      <button
+        @click="openWordCloud"
+        class="w-14 h-14 rounded-full bg-gradient-to-br from-zen-green-500 to-zen-green-600 text-white shadow-lg hover:shadow-2xl hover:shadow-zen-green-200/50 transition-all transform hover:scale-110 flex items-center justify-center group"
+        title="点击查看个人性格词云"
+      >
+        <i class="fas fa-cloud text-xl group-hover:animate-bounce"></i>
+      </button>
+    </div>
 
     <!-- Projects Section -->
     <section id="projects" class="py-20 bg-zen-green-50 relative">
@@ -948,6 +959,8 @@
       :is-visitor-form-configured="isVisitorFormConfigured"
       @open-project="openProjectDetail"
     />
+
+    <WordCloud ref="wordCloudRef" />
   </div>
 </template>
 
@@ -956,6 +969,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useResumeData } from './data';
 import AddModal from './components/AddModal.vue';
 import AiAssistant from './components/AiAssistant.vue';
+import WordCloud from './components/WordCloud.vue';
 
 
 const { data, addItem, updateItem, deleteItem } = useResumeData();
@@ -978,6 +992,12 @@ const aiAssistantRef = ref(null);
 
 const openAiAssistant = () => {
   aiAssistantRef.value?.open?.();
+};
+
+const wordCloudRef = ref(null);
+
+const openWordCloud = () => {
+  wordCloudRef.value?.expandWordCloud?.();
 };
 
 const visitorFormEndpoint = (import.meta.env.VITE_CONTACT_ENDPOINT || import.meta.env.VITE_FORMSPREE_ENDPOINT || '').trim();

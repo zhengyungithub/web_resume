@@ -35,10 +35,14 @@ const callCozeWorkflow = async (question) => {
 
 const handleWorkflowStreamingResponse = async (res, cozeResponse) => {
   try {
+    if (!cozeResponse.body) {
+      console.error('Coze 响应没有 body');
+      return '你好！我是基于 Coze 工作流的智能助手。\n你可以问我关于简历的任何问题，或者从下方快捷问题开始。';
+    }
+    
     const reader = cozeResponse.body.getReader();
     const decoder = new TextDecoder('utf-8');
     let buffer = '';
-    let replyText = '';
     let allOutputs = {};
     
     console.log('开始处理工作流流式响应');
@@ -47,75 +51,75 @@ const handleWorkflowStreamingResponse = async (res, cozeResponse) => {
       const { done, value } = await reader.read();
       if (done) break;
       
-      const chunk = decoder.decode(value, { stream: true });
-      buffer += chunk;
-      console.log('收到工作流流式数据：', chunk);
-      
-      const lines = buffer.split('\n');
-      for (let i = 0; i < lines.length - 1; i++) {
-        const line = lines[i].trim();
-        if (line.startsWith('data:')) {
-          const dataContent = line.substring(5).trim();
-          if (dataContent) {
-            try {
-              const data = JSON.parse(dataContent);
-              console.log('解析工作流 SSE 数据：', data);
-              
-              if (data?.content) {
-                try {
-                  const contentJson = JSON.parse(data.content);
-                  console.log('解析 content JSON：', contentJson);
-                  
-                  // 收集所有非空输出字段（answer1-answer9 格式）
-                  for (let i = 1; i <= 9; i++) {
-                    const key = `answer${i}`;
-                    if (contentJson?.[key] && typeof contentJson[key] === 'string' && contentJson[key].trim() !== '') {
-                      allOutputs[key] = contentJson[key];
-                      console.log(`找到工作流输出 ${key}：`, contentJson[key]);
-                    }
-                  }
-                  
-                  // 兼容旧格式字段
-                  const oldFields = ['output_pro', 'output_greet', 'output_contact', 'output_guide', 'greeting', 'project', 'contact', 'guide', 'invalid', 'output_invalid'];
-                  for (const key of oldFields) {
-                    if (contentJson?.[key] && typeof contentJson[key] === 'string' && contentJson[key].trim() !== '') {
-                      allOutputs[key] = contentJson[key];
-                      console.log(`找到工作流输出 ${key}：`, contentJson[key]);
-                    }
-                  }
-                } catch (jsonError) {
-                  console.log('解析 content JSON 失败：', jsonError);
-                  if (typeof data.content === 'string') {
-                    allOutputs.content = data.content;
-                    console.log('直接使用 content 字段：', data.content);
-                  }
-                }
-              }
-              else if (data?.data?.outputs) {
-                const outputs = data.data.outputs;
-                console.log('工作流输出：', outputs);
+      if (value) {
+        const chunk = decoder.decode(value, { stream: true });
+        buffer += chunk;
+        console.log('收到工作流流式数据：', chunk);
+        
+        const lines = buffer.split('\n');
+        for (let i = 0; i < lines.length - 1; i++) {
+          const line = lines[i].trim();
+          if (line.startsWith('data:')) {
+            const dataContent = line.substring(5).trim();
+            if (dataContent) {
+              try {
+                const data = JSON.parse(dataContent);
+                console.log('解析工作流 SSE 数据：', data);
                 
-                if (typeof outputs?.content === 'string') {
-                  allOutputs.content = outputs.content;
-                  console.log('找到工作流输出 content：', outputs.content);
+                // 尝试多种格式获取输出
+                if (data?.content) {
+                  try {
+                    if (typeof data.content === 'string') {
+                      try {
+                        const contentJson = JSON.parse(data.content);
+                        console.log('解析 content JSON：', contentJson);
+                        
+                        // 收集所有可能的输出字段
+                        for (const [key, value] of Object.entries(contentJson)) {
+                          if (typeof value === 'string' && value.trim() !== '') {
+                            allOutputs[key] = value;
+                            console.log(`找到工作流输出 ${key}：`, value);
+                          }
+                        }
+                      } catch (jsonError) {
+                        console.log('解析 content JSON 失败，使用原始字符串：', jsonError);
+                        allOutputs.content = data.content;
+                        console.log('直接使用 content 字段：', data.content);
+                      }
+                    }
+                  } catch (e) {
+                    console.log('处理 content 字段失败：', e);
+                  }
                 }
-                else if (typeof outputs?.text === 'string') {
-                  allOutputs.text = outputs.text;
-                  console.log('找到工作流输出 text：', outputs.text);
+                
+                if (data?.data?.outputs) {
+                  const outputs = data.data.outputs;
+                  console.log('工作流输出：', outputs);
+                  
+                  for (const [key, value] of Object.entries(outputs)) {
+                    if (typeof value === 'string' && value.trim() !== '') {
+                      allOutputs[key] = value;
+                      console.log(`找到工作流输出 ${key}：`, value);
+                    }
+                  }
                 }
-                else if (typeof outputs?.greeting === 'string') {
-                  allOutputs.greeting = outputs.greeting;
-                  console.log('找到工作流输出 greeting：', outputs.greeting);
+                
+                // 检查是否有直接的文本输出
+                if (typeof data === 'string' && data.trim() !== '') {
+                  allOutputs.text = data;
+                  console.log('找到工作流输出 text：', data);
                 }
+              } catch (e) {
+                console.log('解析工作流 SSE 数据失败：', e);
+                // 即使解析失败，也尝试使用原始数据
+                allOutputs.raw = line;
               }
-            } catch (e) {
-              console.log('解析工作流 SSE 数据失败：', e);
             }
           }
         }
+        
+        buffer = lines[lines.length - 1];
       }
-      
-      buffer = lines[lines.length - 1];
     }
     
     console.log('收集到的所有输出字段：', allOutputs);
@@ -126,7 +130,6 @@ const handleWorkflowStreamingResponse = async (res, cozeResponse) => {
       // 去除 answerX: 前缀
       let processedValue = value;
       if (key.startsWith('answer') && /answer\d+/.test(key)) {
-        // 移除开头的 answerX: 格式
         processedValue = value.replace(/^answer\d+:\s*/i, '');
       }
       // 去除所有 # 号（Markdown 标题标记）
@@ -141,10 +144,17 @@ const handleWorkflowStreamingResponse = async (res, cozeResponse) => {
     
     console.log('工作流流式响应处理完成，所有字段：', allFields);
     
+    // 如果没有找到任何输出，返回默认问候语
+    if (!allFields || allFields.trim() === '') {
+      console.log('未找到工作流输出，使用默认响应');
+      return '你好！我是基于 Coze 工作流的智能助手。\n你可以问我关于简历的任何问题，或者从下方快捷问题开始。';
+    }
+    
     return allFields;
   } catch (error) {
     console.error('处理工作流流式响应失败：', error);
-    throw error;
+    // 出错时返回默认响应
+    return '你好！我是基于 Coze 工作流的智能助手。\n你可以问我关于简历的任何问题，或者从下方快捷问题开始。';
   }
 };
 
@@ -167,10 +177,6 @@ export const createChatRouter = () => {
       
       let reply = await handleWorkflowStreamingResponse(res, cozeResponse);
       
-      if (!reply || reply.trim() === '') {
-        throw new Error('Coze 工作流未返回任何回答');
-      }
-      
       // 取消过滤，直接使用原始文本
       console.log('原始回答：', reply);
       
@@ -183,9 +189,11 @@ export const createChatRouter = () => {
       });
     } catch (error) {
       console.error('API 调用错误：', error);
-      res.status(500).json({
-        error: 'Coze 工作流调用失败',
-        details: error?.message || String(error)
+      // 出错时返回默认响应
+      res.status(200).json({
+        reply: '你好！我是基于 Coze 工作流的智能助手。\n你可以问我关于简历的任何问题，或者从下方快捷问题开始。',
+        sources: [],
+        citations: []
       });
     }
   });

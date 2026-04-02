@@ -12,7 +12,33 @@ const port = process.env.PORT || 3000;
 
 // 配置 CORS
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*'
+  origin: function(origin, callback) {
+    // 允许所有 Vercel 域名和自定义域名
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'https://zhengyun.online',
+      'https://www.zhengyun.online'
+    ];
+    
+    // 检查是否匹配允许的域名
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (allowed.includes('*')) {
+        const regex = new RegExp('^' + allowed.replace(/\*/g, '.*') + '$');
+        return regex.test(origin);
+      }
+      return origin === allowed;
+    });
+    
+    // 允许所有 vercel.app 子域名
+    const isVercelDomain = origin && origin.endsWith('.vercel.app');
+    
+    if (isAllowed || isVercelDomain || !origin) {
+      callback(null, true);
+    } else {
+      console.log('CORS rejected origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
 }));
 
 // 解析 JSON 请求体
