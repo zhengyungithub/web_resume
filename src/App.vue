@@ -36,7 +36,7 @@
                 class="absolute top-full left-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-zen-green-100 py-2 z-50"
               >
                 <a
-                  href="/郑筠_产品.jpeg"
+                  href="/郑筠.jpeg"
                   download
                   class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-zen-green-50 hover:text-zen-green-700 transition-colors"
                   @click="showResumeDropdown = false"
@@ -45,7 +45,7 @@
                   <span>PNG 图片版</span>
                 </a>
                 <a
-                  href="/郑筠_产品.pdf"
+                  href="/郑筠.pdf"
                   download
                   class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-zen-green-50 hover:text-zen-green-700 transition-colors"
                   @click="showResumeDropdown = false"
