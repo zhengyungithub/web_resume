@@ -3372,13 +3372,18 @@ ${JSON.stringify(chartData, null, 2)}
     function saveDraft(content) {
       // 这里可以实现本地存储或API调用保存草稿
       // 为了演示，我们使用localStorage
-      const draftKey = 'review_report_draft_' + Date.now();
-      localStorage.setItem(draftKey, JSON.stringify({
-        content: content,
+      try {
+        const draftKey = 'review_report_draft_' + Date.now();
+        localStorage.setItem(draftKey, JSON.stringify({
+          content: content,
         timestamp: new Date().toISOString(),
         originalReport: originalReport
       }));
       console.log('草稿已保存:', draftKey);
+      } catch (error) {
+        console.error('保存草稿失败:', error);
+        // 可以在这里添加用户提示
+      }
     }
   }
 
@@ -6008,7 +6013,7 @@ ${currentAnswer.answer}
               <div class="guide-section" style="margin-bottom: 20px;">
                 <h4 style="margin-bottom: 12px; color: #666; font-size: 16px;">图文指引</h4>
                 <div style="border: 1px solid #e8e8e8; border-radius: 4px; overflow: hidden;">
-                  <img src="${guideData.image}" alt="操作指引" style="width: 100%; height: auto; display: block;">
+                  <img src="${guideData.image}" alt="操作指引" style="width: 100%; height: auto; display: block;" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2YwZjVmZiIvPjx0ZXh0IHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiPuaYvuekuuW8oOS4iuW9oOaenCB3aXRoIGVtcGxveWVlIGRldGFpbDwvdGV4dD48L3N2Zz4='; this.alt='图片加载失败，显示默认图片';">
                 </div>
               </div>
               

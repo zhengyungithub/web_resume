@@ -44,6 +44,12 @@ app.use(cors({
 // 解析 JSON 请求体
 app.use(express.json());
 
+// 设置 HSTS 头
+app.use((req, res, next) => {
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
+});
+
 // 处理 API 路由
 app.post('/api/contact', contactHandler);
 
@@ -53,6 +59,7 @@ app.use('/api', chatRouter);
 
 // 提供静态文件服务
 app.use(express.static('public'));
+app.use(express.static('dist'));
 
 // 启动服务器
 app.listen(port, () => {

@@ -242,7 +242,7 @@ const guideSections = computed(() => [
 
 const messages = ref([]);
 
-const showGuide = computed(() => messages.value.length === 0 || (messages.value.length === 1 && messages.value[0]?.meta === 'greeting'));
+const showGuide = computed(() => (messages?.value?.length || 0) === 0 || ((messages?.value?.length || 0) === 1 && messages?.value?.[0]?.meta === 'greeting'));
 const showShortcutsArea = computed(() => showGuide.value || showShortcuts.value);
 
 const quickPrompts = computed(() => [
@@ -331,7 +331,7 @@ const appendMessage = async (m) => {
 const open = async () => {
   isOpen.value = true;
   await nextTick();
-  if (messages.value.length === 0) await resetToGuide();
+  if ((messages?.value?.length || 0) === 0) await resetToGuide();
 };
 
 const close = () => {
@@ -345,7 +345,7 @@ const toggleOpen = () => {
 
 const toggleLang = () => {
   lang.value = lang.value === 'zh' ? 'en' : 'zh';
-  if (messages.value.length === 1 && messages.value[0]?.meta === 'greeting') {
+  if ((messages?.value?.length || 0) === 1 && messages?.value?.[0]?.meta === 'greeting') {
     messages.value[0] = {
       ...messages.value[0],
       text: t('greet')()
@@ -380,7 +380,7 @@ const onCitationClick = () => {
   close();
 };
 
-const canSend = computed(() => input.value.trim().length > 0);
+const canSend = computed(() => (input?.value?.trim?.()?.length || 0) > 0);
 
 const normalizeQuery = (q) => (q || '').trim();
 
@@ -734,16 +734,18 @@ const callChatApi = async (q) => {
       throw new Error('Coze 工作流未返回任何回答');
     }
     
-    // 解析各个字段并输出到控制台
-    const fields = replyText.split('\n\n').reduce((acc, line) => {
-      const [key, ...valueParts] = line.split(':');
-      if (key && valueParts.length > 0) {
-        acc[key.trim()] = valueParts.join(':').trim();
-      }
-      return acc;
-    }, {});
+    // 检测是否为通用欢迎语
+    const genericWelcome = '你好！我是基于 Coze 工作流的智能助手。';
+    if (replyText.includes(genericWelcome)) {
+      console.log('Coze 工作流返回了通用欢迎语，使用本地备用回答');
+      return basicAnswer(question);
+    }
     
-
+    // 检测是否为余额不足错误
+    if (replyText.includes('Insufficient coze credits balance') || replyText.includes('余额不足')) {
+      console.log('Coze 工作流余额不足，使用本地备用回答');
+      return basicAnswer(question);
+    }
     
     // 取消过滤，直接使用原始文本
     console.log('原始文本长度：', replyText.length);
@@ -758,7 +760,9 @@ const callChatApi = async (q) => {
     console.error('API 调用错误：', error);
     console.error('错误信息：', error.message);
     console.error('错误堆栈：', error.stack);
-    throw error;
+    // 出错时使用本地备用回答
+    console.log('API 调用失败，使用本地备用回答');
+    return basicAnswer(String(q || '').trim());
   }
 };
 
@@ -915,19 +919,22 @@ const runAction = async (a) => {
     await appendMessage({ role: 'user', text: label || query, citations: [], actions: [] });
     isLoading.value = true;
     try {
-      const reply = await callChatApi(query);
-      await appendMessage({ role: 'assistant', ...reply });
-    } catch (error) {
-      console.error('API 调用失败：', error);
-      await appendMessage({ 
-        role: 'assistant', 
-        text: `抱歉，调用 Coze 工作流失败：${error.message || '未知错误'}`,
-        citations: [],
-        actions: []
-      });
-    } finally {
-      isLoading.value = false;
-    }
+    const reply = await callChatApi(query);
+    await appendMessage({ role: 'assistant', ...reply });
+  } catch (error) {
+    console.error('API 调用失败：', error);
+    
+    // 使用本地备用回答
+    console.log('使用本地 basicAnswer 作为备用');
+    const fallbackReply = basicAnswer(query);
+    console.log('备用回答：', fallbackReply);
+    await appendMessage({ 
+      role: 'assistant', 
+      ...fallbackReply
+    });
+  } finally {
+    isLoading.value = false;
+  }
     return;
   }
   if (a.type === 'open_project') {
@@ -948,19 +955,22 @@ const runAction = async (a) => {
     await appendMessage({ role: 'user', text: lang.value === 'zh' ? `按${label}方向推荐项目` : `Recommend projects: ${label}`, citations: [], actions: [] });
     isLoading.value = true;
     try {
-      const reply = await callChatApi(query);
-      await appendMessage({ role: 'assistant', ...reply });
-    } catch (error) {
-      console.error('API 调用失败：', error);
-      await appendMessage({ 
-        role: 'assistant', 
-        text: `抱歉，调用 Coze 工作流失败：${error.message || '未知错误'}`,
-        citations: [],
-        actions: []
-      });
-    } finally {
-      isLoading.value = false;
-    }
+    const reply = await callChatApi(query);
+    await appendMessage({ role: 'assistant', ...reply });
+  } catch (error) {
+    console.error('API 调用失败：', error);
+    
+    // 使用本地备用回答
+    console.log('使用本地 basicAnswer 作为备用');
+    const fallbackReply = basicAnswer(query);
+    console.log('备用回答：', fallbackReply);
+    await appendMessage({ 
+      role: 'assistant', 
+      ...fallbackReply
+    });
+  } finally {
+    isLoading.value = false;
+  }
     return;
   }
   if (a.type === 'copy_email') {
@@ -1033,11 +1043,14 @@ const onSend = async () => {
     console.error('API 调用失败：', error);
     console.error('错误信息：', error.message);
     console.error('错误堆栈：', error.stack);
+    
+    // 使用本地备用回答
+    console.log('使用本地 basicAnswer 作为备用');
+    const fallbackReply = basicAnswer(q);
+    console.log('备用回答：', fallbackReply);
     await appendMessage({ 
       role: 'assistant', 
-      text: `抱歉，调用 Coze 工作流失败：${error.message || '未知错误'}`,
-      citations: [],
-      actions: []
+      ...fallbackReply
     });
   } finally {
     isLoading.value = false;
@@ -1053,11 +1066,14 @@ const handleGuideClick = async (s) => {
     await appendMessage({ role: 'assistant', ...reply });
   } catch (error) {
     console.error('API 调用失败：', error);
+    
+    // 使用本地备用回答
+    console.log('使用本地 basicAnswer 作为备用');
+    const fallbackReply = basicAnswer(q);
+    console.log('备用回答：', fallbackReply);
     await appendMessage({ 
       role: 'assistant', 
-      text: `抱歉，调用 Coze 工作流失败：${error.message || '未知错误'}`,
-      citations: [],
-      actions: []
+      ...fallbackReply
     });
   } finally {
     isLoading.value = false;
@@ -1073,11 +1089,14 @@ const handleQuickClick = async (p) => {
     await appendMessage({ role: 'assistant', ...reply });
   } catch (error) {
     console.error('API 调用失败：', error);
+    
+    // 使用本地备用回答
+    console.log('使用本地 basicAnswer 作为备用');
+    const fallbackReply = basicAnswer(q);
+    console.log('备用回答：', fallbackReply);
     await appendMessage({ 
       role: 'assistant', 
-      text: `抱歉，调用 Coze 工作流失败：${error.message || '未知错误'}`,
-      citations: [],
-      actions: []
+      ...fallbackReply
     });
   } finally {
     isLoading.value = false;

@@ -395,17 +395,17 @@
         </div>
       </div>
       
-      <div v-if="showCertificatePopup && currentCertificate" 
+      <div v-if="showCertificatePopup && currentCertificate.value" 
            class="fixed z-50 bg-white rounded-2xl shadow-2xl p-4 max-w-lg"
            :style="{ top: popupPosition.y + 'px', left: popupPosition.x + 'px' }"
            @mouseenter="cancelHideCertificateImage"
            @mouseleave="hideCertificateImage">
-        <img v-if="currentCertificate.image" 
-             :src="currentCertificate.image" 
-             :alt="currentCertificate.name" 
+        <img v-if="currentCertificate.value.image" 
+             :src="currentCertificate.value.image" 
+             :alt="currentCertificate.value.name" 
              class="max-w-full h-auto rounded-lg cursor-zoom-in" 
-             @click.stop="openCertificateZoom(currentCertificate)"
-             @error="console.error('证书图片加载失败:', currentCertificate.image)">
+             @click.stop="openCertificateZoom(currentCertificate.value)"
+             @error="console.error('证书图片加载失败:', currentCertificate.value.image)">
         <div v-else class="text-gray-500 text-center py-8">暂无证书图片</div>
       </div>
       
@@ -665,7 +665,7 @@
                 </div>
                 <div class="text-center">
                   <h4 class="text-gray-900 font-semibold text-lg mb-1">横屏照片</h4>
-                  <p class="text-gray-500 text-sm">{{ landscapePhotos.length }} 张作品</p>
+                  <p class="text-gray-500 text-sm">{{ landscapePhotos?.length || 0 }} 张作品</p>
                 </div>
               </div>
               <div class="absolute top-3 right-3 w-6 h-6 rounded-full bg-zen-green-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -680,7 +680,7 @@
                 </div>
                 <div class="text-center">
                   <h4 class="text-gray-900 font-semibold text-lg mb-1">竖屏照片</h4>
-                  <p class="text-gray-500 text-sm">{{ portraitPhotos.length }} 张作品</p>
+                  <p class="text-gray-500 text-sm">{{ portraitPhotos?.length || 0 }} 张作品</p>
                 </div>
               </div>
               <div class="absolute top-3 right-3 w-6 h-6 rounded-full bg-zen-green-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -702,7 +702,7 @@
             </div>
             <div>
               <h3 class="text-gray-900 text-lg font-semibold">{{ currentPhotoType === 'landscape' ? '横屏' : '竖屏' }}摄影作品集</h3>
-              <p class="text-xs text-zen-green-600">{{ photos.length }} 张作品</p>
+              <p class="text-xs text-zen-green-600">{{ photos?.length || 0 }} 张作品</p>
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -724,7 +724,7 @@
               <img
                 v-for="(photo, index) in photos"
                 v-show="currentPhotoIndex === index || prevPhotoIndex === index"
-                :key="photo"
+                :key="index"
                 :src="photo"
                 :alt="`摄影作品 ${index + 1}`"
                 class="absolute max-w-full max-h-full object-contain cursor-zoom-in transition-opacity duration-700 hover:scale-105 rounded-lg"
@@ -750,8 +750,8 @@
           </div>
           <div class="mt-4 flex justify-center items-center gap-3">
             <span class="text-sm text-gray-600 font-medium">第 {{ currentPhotoIndex + 1 }} 张</span>
-            <span class="text-gray-300">|</span>
-            <span class="text-sm text-gray-600">共 {{ photos.length }} 张</span>
+            <span class="text-sm text-gray-600">|</span>
+            <span class="text-sm text-gray-600">共 {{ photos?.length || 0 }} 张</span>
             <div class="flex items-center gap-2 ml-4">
               <button @click.stop="toggleAutoPlay" class="px-3 py-1.5 rounded-full text-xs font-medium transition-all" :class="isAutoPlaying ? 'bg-zen-green-100 text-zen-green-700' : 'bg-gray-100 text-gray-600 hover:bg-zen-green-50 hover:text-zen-green-600'">
                 <i :class="isAutoPlaying ? 'fas fa-pause' : 'fas fa-play'" class="mr-1"></i>
@@ -1196,7 +1196,7 @@ let photoTimer = null;
 const startPhotoCarousel = () => {
   photoTimer = setInterval(() => {
     prevPhotoIndex.value = currentPhotoIndex.value;
-    currentPhotoIndex.value = (currentPhotoIndex.value + 1) % photos.value.length;
+    currentPhotoIndex.value = (currentPhotoIndex.value + 1) % (photos.value?.length || 1);
   }, 3000);
 };
 
@@ -1298,12 +1298,12 @@ const cancelDownload = () => {
 
 const nextPhoto = () => {
   prevPhotoIndex.value = currentPhotoIndex.value;
-  currentPhotoIndex.value = (currentPhotoIndex.value + 1) % photos.value.length;
+  currentPhotoIndex.value = (currentPhotoIndex.value + 1) % (photos.value?.length || 1);
 };
 
 const prevPhoto = () => {
   prevPhotoIndex.value = currentPhotoIndex.value;
-  currentPhotoIndex.value = (currentPhotoIndex.value - 1 + photos.value.length) % photos.value.length;
+  currentPhotoIndex.value = (currentPhotoIndex.value - 1 + (photos.value?.length || 1)) % (photos.value?.length || 1);
 };
 
 const isAutoPlaying = ref(false);
@@ -1355,9 +1355,9 @@ const preloadImages = (urls) => {
 };
 
 const startCarousel = () => {
-  if (avatarList.value.length > 1) {
+  if (avatarList?.value?.length > 1) {
     timer = setInterval(() => {
-      currentAvatarIndex.value = (currentAvatarIndex.value + 1) % avatarList.value.length;
+      currentAvatarIndex.value = (currentAvatarIndex.value + 1) % (avatarList?.value?.length || 1);
     }, 3000);
   }
 };
