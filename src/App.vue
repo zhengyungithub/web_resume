@@ -1281,7 +1281,7 @@ const openDocumentModal = (type, project) => {
 const confirmDownload = () => {
   // 确认下载
   const link = document.createElement('a');
-  link.href = `http://localhost:3000/${downloadFileName.value}`;
+  link.href = `/${downloadFileName.value}`;
   link.download = downloadFileName.value;
   document.body.appendChild(link);
   link.click();
