@@ -94,9 +94,17 @@ Vercel 控制台 → 项目 → Settings → Domains → 把 `zhengyun.online`�
 ssh ubuntu@你的服务器公网IP
 sudo -i                      # 后面 bootstrap 要求 root 权限
 
-git clone https://github.com/zhengyungithub/web_resume.git /root/zhengyun-src
-bash /root/zhengyun-src/deploy/bootstrap.sh
+# 直接把代码克隆到脚本最终使用的目录，避免同一份 277MB 代码下载两遍
+apt-get update -y && apt-get install -y git
+mkdir -p /var/www/zhengyun
+git clone --depth 1 https://github.com/zhengyungithub/web_resume.git /var/www/zhengyun/app
+
+bash /var/www/zhengyun/app/deploy/bootstrap.sh
 ```
+
+> 为什么要先 clone 到 `/var/www/zhengyun/app`：脚本内部的目标目录就是它。若像早期文档那样先克隆到 `/root/zhengyun-src`，
+> 脚本第 6 步会再完整克隆一遍，等于把含 91 张原图（277MB）的仓库下载两次。
+> 先放到目标目录后，脚本走 `git fetch` 分支，只拉增量。
 
 > 用密钥登录的话：控制台「密钥」绑定实例后 `ssh -i 你的私钥.pem ubuntu@IP`。
 > 阿里云轻量默认是 `root`，直接 `ssh root@IP` 即可。
@@ -116,19 +124,12 @@ bash /root/zhengyun-src/deploy/bootstrap.sh
 
 #### 如果服务器拉 GitHub 太慢（大陆机房常见）
 
-现在仓库里还提交着 `node_modules`，体积 345MB，3M 带宽的机器 `git clone` 可能要十几分钟甚至失败。两个办法：
+`node_modules` 已从仓库移除（29088 个文件 / 334MB），但最新代码树里还有 **91 张原图共 277MB**，所以 clone 仍需拉这部分。腾讯云入站带宽通常不受 3M 出站限制，多数情况几分钟能拉完。
 
-**办法 A（推荐）：先把 node_modules 从仓库里去掉**，一次操作永久受益：
-
-```bash
-git rm -r --cached node_modules contact-server/node_modules
-git commit -m "chore: 不再提交 node_modules" && git push
-```
-
-**办法 B：本地构建好，只把产物传上去**（完全不走 git）：
+如果确实卡住或反复中断，用**办法 B：本地打包，只传产物**（完全不走 git）：
 
 ```bash
-# 本地项目根目录执行
+# 本地项目根目录执行（Windows 用 Git Bash，或用 7-Zip 压成 tar.gz）
 npm run build
 tar --exclude=node_modules --exclude=.env -czf zhengyun.tar.gz \
     dist api server.js package.json package-lock.json deploy
@@ -183,6 +184,7 @@ pm2 startup          # 按提示复制粘贴它输出的那行命令，实现开
 
 curl -s localhost:3000/api/health
 # 期望：{"ok":true,...,"llmConfigured":true,"mailConfigured":true}
+# 还没填大模型 Key 时 llmConfigured 会是 false，属正常，站点照常可用
 ```
 
 ### 第 4 步：签 HTTPS 证书并切换配置
