@@ -1,0 +1,7 @@
+# 换行符策略
+# Windows 上 git 默认会把文本文件 checkout 成 CRLF，但 Linux 执行
+# 带 \r 的 shell 脚本会报 "bad interpreter: /usr/bin/env bash^M"，
+# Nginx 配置里的 \r 也会污染路径。这里固定这几类必须为 LF。
+
+*.sh   text eol=lf
+*.conf text eol=lf
