@@ -1620,16 +1620,16 @@ const navigateToRolePage = (role) => {
   let url = '';
   switch (role) {
     case 'doctor':
-      url = 'http://localhost:3000/templates/医生问诊.html';
+      url = '/templates/医生问诊.html';
       break;
     case 'family':
-      url = 'http://localhost:3000/templates/异常预警.html';
+      url = '/templates/异常预警.html';
       break;
     case 'elderly':
-      url = 'http://localhost:3000/templates/健康数据录入.html';
+      url = '/templates/健康数据录入.html';
       break;
     default:
-      url = 'http://localhost:3000/养老健康服务平台首页.html';
+      url = '/养老健康服务平台首页.html';
   }
   window.open(url, '_blank');
   closeRoleModal();

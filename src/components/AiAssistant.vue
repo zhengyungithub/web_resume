@@ -731,26 +731,9 @@ const callChatApi = async (q) => {
     const replyText = typeof data?.reply === 'string' ? data.reply : '';
     
     if (!replyText || replyText.trim() === '') {
-      throw new Error('Coze 工作流未返回任何回答');
+      throw new Error('助手没有返回内容');
     }
-    
-    // 检测是否为通用欢迎语
-    const genericWelcome = '你好！我是基于 Coze 工作流的智能助手。';
-    if (replyText.includes(genericWelcome)) {
-      console.log('Coze 工作流返回了通用欢迎语，使用本地备用回答');
-      return basicAnswer(question);
-    }
-    
-    // 检测是否为余额不足错误
-    if (replyText.includes('Insufficient coze credits balance') || replyText.includes('余额不足')) {
-      console.log('Coze 工作流余额不足，使用本地备用回答');
-      return basicAnswer(question);
-    }
-    
-    // 取消过滤，直接使用原始文本
-    console.log('原始文本长度：', replyText.length);
-    console.log('原始文本内容：', replyText);
-    
+
     return {
       text: replyText,
       citations: Array.isArray(data?.citations) && data.citations.length ? data.citations : [],

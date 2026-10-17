@@ -1,38 +1,63 @@
 import { Resend } from 'resend';
 
+const escapeHtml = (value = '') =>
+  String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+const isEmail = (value = '') => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value).trim());
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: '只支持 POST 请求' });
   }
 
+  const { name, email, subject, message, _gotcha } = req.body || {};
+
+  // 蜜罐字段：机器人会填，正常人看不见
+  if (_gotcha) {
+    return res.status(200).json({ success: true });
+  }
+
+  if (!String(name || '').trim() || !isEmail(email) || !String(message || '').trim()) {
+    return res.status(400).json({ error: '请填写姓名、有效邮箱和留言内容' });
+  }
+
+  if (!process.env.RESEND_API_KEY) {
+    console.error('[contact] 未配置 RESEND_API_KEY');
+    return res.status(503).json({ error: '留言服务暂未配置好，请直接发邮件联系' });
+  }
+
+  const to = (process.env.CONTACT_TO || 'zhengyun_0629@qq.com')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const from = process.env.CONTACT_FROM || '网站留言 <contact@zhengyun.online>';
+
   try {
-    const { name, email, subject, message } = req.body;
-
-    console.log("接收到表单数据:", { name, email, subject, message });
-    console.log("Resend API Key:", process.env.RESEND_API_KEY ? "已配置" : "未配置");
-
-    // 在函数内部创建Resend实例，确保环境变量已加载
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    const data = await resend.emails.send({
-      from: '网站留言 <contact@zhengyun.online>', // ✅ 你的自定义域名邮箱
-      to: ['zhengyun_0629@qq.com'], // ✅ 你的接收邮箱
-      reply_to: email, // 方便你直接回复访客
-      subject: `[网站留言] ${subject || '新消息'}`,
+    await resend.emails.send({
+      from,
+      to,
+      reply_to: String(email).trim(),
+      subject: `[网站留言] ${String(subject || '新消息').slice(0, 80)}`,
       html: `
-        <h3>你有新的网站访客留言！</h3>
-        <p><strong>姓名：</strong>${name}</p>
-        <p><strong>邮箱：</strong>${email}</p>
-        <p><strong>主题：</strong>${subject}</p>
-        <p><strong>内容：</strong>${message}</p>
-      `,
+        <h3>你有新的网站访客留言</h3>
+        <p><strong>姓名：</strong>${escapeHtml(name)}</p>
+        <p><strong>邮箱：</strong>${escapeHtml(email)}</p>
+        <p><strong>主题：</strong>${escapeHtml(subject)}</p>
+        <p><strong>内容：</strong></p>
+        <p style="white-space:pre-wrap">${escapeHtml(message)}</p>
+      `
     });
 
-    console.log("邮件发送成功:", data);
     return res.status(200).json({ success: true });
   } catch (error) {
-    console.error("发送邮件失败:", error);
-    console.error("错误详情:", error.response ? error.response.data : error);
-    return res.status(500).json({ error: error.message, details: error.response ? error.response.data : null });
+    // 详细原因只写日志，不返回给浏览器
+    console.error('[contact] 发送失败：', error);
+    return res.status(500).json({ error: '留言发送失败，请稍后重试或直接发邮件' });
   }
 }
