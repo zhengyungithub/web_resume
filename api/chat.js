@@ -1,5 +1,5 @@
 import express from 'express';
-import { knowledgeBase } from './kb.js';
+import { getKnowledge, reloadKnowledge } from './knowledge-loader.js';
 import { buildIndex, search } from './retriever.js';
 import {
   generateAnswer,
@@ -9,8 +9,21 @@ import {
 } from './answerer.js';
 
 // ── 索引在进程启动时建一次，后续请求直接复用 ───────────────────────────
-const index = buildIndex(knowledgeBase);
+// 知识库来源：knowledge/ 目录下的 Markdown 文档（改文档 → 重启进程即生效）
+let knowledge = getKnowledge();
+let knowledgeBase = knowledge.entries;
+let index = buildIndex(knowledgeBase);
 console.log(`[chat] 知识库索引就绪：${knowledgeBase.length} 条 / ${index.chunks.length} 个片段`);
+
+function rebuildIndex(source = 'startup') {
+  knowledge = reloadKnowledge();
+  knowledgeBase = knowledge.entries;
+  index = buildIndex(knowledgeBase);
+  console.log(
+    `[chat] 索引已重建（${source}）：${knowledgeBase.length} 条 / ${index.chunks.length} 个片段`
+  );
+  return knowledge;
+}
 
 const GREETING_PATTERN = /^(你好|您好|hi|hello|嗨|在吗|哈喽|hey)[\s!！。,.，?？]*$/i;
 
@@ -147,6 +160,12 @@ export const createChatRouter = () => {
       ok: true,
       knowledgeBaseEntries: knowledgeBase.length,
       indexedChunks: index.chunks.length,
+      knowledge: {
+        source: knowledge.source,
+        dir: knowledge.dir,
+        files: knowledge.files,
+        warnings: knowledge.warnings
+      },
       llm: {
         enabled: cfg.enabled,
         model: cfg.enabled ? cfg.model : null,
@@ -159,6 +178,20 @@ export const createChatRouter = () => {
   router.post('/chat/clear-cache', (req, res) => {
     cache.clear();
     res.json({ success: true, message: '缓存已清空' });
+  });
+
+  // 改完文档不重启也能生效：POST /api/chat/reload
+  router.post('/chat/reload', (req, res) => {
+    const next = rebuildIndex('manual');
+    cache.clear();
+    res.json({
+      success: true,
+      message: '知识库已重新加载，缓存已清空',
+      knowledgeBaseEntries: next.entries.length,
+      indexedChunks: index.chunks.length,
+      files: next.files,
+      warnings: next.warnings
+    });
   });
 
   return router;

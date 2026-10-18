@@ -265,6 +265,29 @@ python deploy/publish.py
 
 > 构建失败会直接中止，**线上继续跑旧版本**，不会出现半新半旧的站点。
 
+### 只改知识库（不动代码）
+
+AI 助手的内容来自 `knowledge/` 下的 Markdown 文档，改完不用重新构建前端：
+
+```bash
+python deploy/publish.py --skip-build
+```
+
+上传后 `pm2 reload` 会重建检索索引。也可以在服务器上不重启进程、直接热重载：
+
+```bash
+curl -X POST http://127.0.0.1:3000/api/chat/reload
+```
+
+确认线上读到的是文档而不是旧快照，看这一行：
+
+```bash
+curl -s http://127.0.0.1:3000/api/chat/health
+# "knowledge": { "source": "docs:/var/www/zhengyun/app/knowledge", "files": [...], "warnings": [] }
+```
+
+`publish.py` 的 `INCLUDE_DIRS` 必须包含 `knowledge`，漏了会退回 `api/kb.js` 手工快照（内容一样，但改文档就不生效了）。
+
 ### 如果服务器能访问 GitHub（境外节点 / 已配加速）
 
 ```bash

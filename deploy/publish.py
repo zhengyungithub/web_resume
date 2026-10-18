@@ -38,7 +38,8 @@ DEFAULT_KEY = str(Path.home() / ".ssh" / "tencentcloud_ed25519")
 
 # 需要同步的路径（相对仓库根目录）
 INCLUDE_FILES = ["server.js", "package.json", "package-lock.json", ".env.example"]
-INCLUDE_DIRS = ["dist", "api", "deploy"]
+# knowledge/ 是 AI 助手的知识库源（Markdown 文档），漏了会退回 api/kb.js 旧快照
+INCLUDE_DIRS = ["dist", "api", "deploy", "knowledge"]
 
 
 def log(msg):
@@ -144,6 +145,7 @@ def restart(host, key, sudo_pass):
 
 def verify(host):
     log("5/5 线上验证")
+    import json
     import urllib.request
     # 绕开本机 http_proxy（代理不认这台服务器的 IP）
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -154,6 +156,21 @@ def verify(host):
                 print(f"    {label}: HTTP {r.status}  {body[:120]}")
         except Exception as e:
             print(f"    {label}: 失败 {e}")
+
+    # 知识库：确认线上加载的是文档而不是 kb.js 旧快照
+    try:
+        with opener.open(f"http://{host}/api/chat/health", timeout=15) as r:
+            data = json.loads(r.read().decode("utf-8", "replace"))
+        kb = data.get("knowledge", {})
+        print(f"    知识库: {data.get('knowledgeBaseEntries')} 篇 / {data.get('indexedChunks')} 片段")
+        print(f"    来源: {kb.get('source')}")
+        if str(kb.get("source", "")).startswith("legacy"):
+            print("    \033[1;33m⚠️  线上仍在用 api/kb.js 旧快照，knowledge/ 可能没上传成功\033[0m")
+        if kb.get("warnings"):
+            for w in kb["warnings"]:
+                print(f"    ⚠️  {w}")
+    except Exception as e:
+        print(f"    知识库: 失败 {e}")
 
 
 def main():

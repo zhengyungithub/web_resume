@@ -83,6 +83,9 @@ export function buildIndex(entries = []) {
       const tf = new Map();
       for (const t of tokens) tf.set(t, (tf.get(t) || 0) + 1);
 
+      // 链接字符占比：用来识别"目录型"段落（作品集就是一串 Figma 链接）
+      const urlChars = (text.match(/https?:\/\/\S+/g) || []).reduce((n, u) => n + u.length, 0);
+
       chunks.push({
         id: `${entryIndex}-${partIndex}`,
         category,
@@ -90,7 +93,8 @@ export function buildIndex(entries = []) {
         title: entry.meta?.title || category,
         text,
         tf,
-        length: tokens.length
+        length: tokens.length,
+        linkRatio: text.length ? urlChars / text.length : 0
       });
 
       for (const term of tf.keys()) df.set(term, (df.get(term) || 0) + 1);
@@ -117,6 +121,7 @@ const ALIASES = {
   学历: ['教育', '本科', '学校'],
   学校: ['教育', '大学'],
   哪所: ['教育', '大学'],
+  毕业: ['教育', '学校'],
   实习: ['工作', '实习'],
   公司: ['工作'],
   上班: ['工作'],
@@ -130,7 +135,12 @@ const ALIASES = {
   证书: ['证书', '软考'],
   证: ['证书'],
   养老: ['养老'],
-  饮食: ['饮食', '健康']
+  饮食: ['饮食', '健康'],
+  // 自我介绍类：「你叫什么名字」「你是谁」
+  名字: ['姓名'],
+  姓名: ['姓名'],
+  谁: ['姓名'],
+  简历: ['基本信息']
 };
 
 function expandQuery(query) {
@@ -189,9 +199,12 @@ export function search(index, query, k = 4) {
     // 类别命中：问"证书"就优先【证书】段落
     const categoryHit = chunk.category && uniqueTerms.some((t) => chunk.category.includes(t)) ? 1.35 : 1;
 
+    // 纯链接清单（URL 占正文 25% 以上）更像目录，回答描述性问题时降权
+    const linkPenalty = chunk.linkRatio >= 0.25 ? 0.7 : 1;
+
     scored.push({
       ...chunk,
-      score: score * (0.5 + 0.5 * coverage) * categoryHit,
+      score: score * (0.5 + 0.5 * coverage) * categoryHit * linkPenalty,
       coverage
     });
   }

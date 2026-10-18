@@ -1,3 +1,11 @@
+// ⚠️ 历史快照，仅作兜底。AI 助手的知识库现在由 knowledge/ 目录下的 Markdown 文档驱动。
+//
+// 工作机制见 api/knowledge-loader.js：
+//   - 正常情况：读取 knowledge/*.md → 建索引 → 回答
+//   - 兜底情况：knowledge/ 不存在或一篇都没读到（比如打包时漏了目录）→ 用本文件这 9 条，
+//     保证 /api/chat 不至于整个挂掉
+//
+// 改内容请改 knowledge/ 下的文档，不要改这里。
 import { pathToFileURL } from 'url';
 
 export const knowledgeBase = [
