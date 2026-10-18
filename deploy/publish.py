@@ -19,6 +19,7 @@ import argparse
 import base64
 import getpass
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -49,7 +50,10 @@ def build():
     vite = ROOT / "node_modules" / "vite" / "bin" / "vite.js"
     if not vite.exists():
         sys.exit("未找到 vite，请先在项目根目录执行 npm install")
-    r = subprocess.run(["node", str(vite), "build"], cwd=ROOT)
+    node = os.environ.get("NODE_BIN") or shutil.which("node")
+    if not node:
+        sys.exit("找不到 node，可设置环境变量 NODE_BIN 指向 node 可执行文件")
+    r = subprocess.run([node, str(vite), "build"], cwd=ROOT)
     if r.returncode != 0:
         sys.exit("构建失败，已中止（线上仍是旧版本）")
 
@@ -141,9 +145,11 @@ def restart(host, key, sudo_pass):
 def verify(host):
     log("5/5 线上验证")
     import urllib.request
+    # 绕开本机 http_proxy（代理不认这台服务器的 IP）
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
     for path, label in [("/", "首页"), ("/api/health", "后端健康")]:
         try:
-            with urllib.request.urlopen(f"http://{host}{path}", timeout=15) as r:
+            with opener.open(f"http://{host}{path}", timeout=15) as r:
                 body = r.read(300).decode("utf-8", "replace").strip()
                 print(f"    {label}: HTTP {r.status}  {body[:120]}")
         except Exception as e:
