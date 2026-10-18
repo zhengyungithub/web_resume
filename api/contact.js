@@ -39,7 +39,10 @@ export default async function handler(req, res) {
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    await resend.emails.send({
+    // ⚠️ resend SDK 的 send() 不会抛异常：失败时把错误放在返回值的 error 里。
+    // 只写 try/catch 会让「域名未验证」「key 失效」这类错误伪装成成功，
+    // 前端显示已发送、用户却收不到信，排查时完全没有线索。
+    const { data, error } = await resend.emails.send({
       from,
       to,
       reply_to: String(email).trim(),
@@ -54,10 +57,17 @@ export default async function handler(req, res) {
       `
     });
 
+    if (error) {
+      // 常见原因：域名未在 Resend 验证、key 被吊销、额度用尽、收件人被拒
+      console.error('[contact] Resend 返回错误：', JSON.stringify(error));
+      return res.status(500).json({ error: '留言发送失败，请稍后重试或直接发邮件' });
+    }
+
+    console.log('[contact] 已投递，resend id =', data?.id);
     return res.status(200).json({ success: true });
   } catch (error) {
-    // 详细原因只写日志，不返回给浏览器
-    console.error('[contact] 发送失败：', error);
+    // 只有网络层异常会走到这里
+    console.error('[contact] 发送异常：', error);
     return res.status(500).json({ error: '留言发送失败，请稍后重试或直接发邮件' });
   }
 }
