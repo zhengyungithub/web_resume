@@ -1520,7 +1520,7 @@ let certificateHideTimer = null;
 
 const showTranscriptPreview = ref(false);
 const showTranscriptZoom = ref(false);
-const transcriptImage = '/成绩单.png';
+const transcriptImage = '/成绩单.jpg';
 
 const showCertificateImage = (cert, event) => {
   console.log('显示证书:', cert);

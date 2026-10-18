@@ -8,8 +8,8 @@ const defaultData = {
     email: "zhengyun_0629@qq.com",
     phone: "2746747178",
     location: "深圳、杭州、苏州、宁波",
-    avatar: "/头像轮播图/1.png",
-    avatarList: ["/头像轮播图/1.png", "/头像轮播图/2.png", "/头像轮播图/3.png", "/头像轮播图/4.png", "/头像轮播图/5.png", "/头像轮播图/6.png", "/头像轮播图/7.png", "/头像轮播图/8.png", "/头像轮播图/9.png"]
+    avatar: "/头像轮播图/1.jpg",
+    avatarList: ["/头像轮播图/1.jpg", "/头像轮播图/2.jpg", "/头像轮播图/3.jpg", "/头像轮播图/4.jpg", "/头像轮播图/5.jpg", "/头像轮播图/6.jpg", "/头像轮播图/7.jpg", "/头像轮播图/8.jpg", "/头像轮播图/9.jpg"]
   },
   education: [
     {
@@ -44,7 +44,7 @@ const defaultData = {
           "跨团队协作与落地 ：协调团队解决AI结果解析、Redis缓存策略等技术难点，推动饮食记录、AI分析、营养师服务等核心功能落地；输出PRD、接口文档等10+份核心文档，建立前后端协作规范。\n" +
           "数据驱动迭代 ：通过埋点追踪用户行为，发现AI分析结果采纳率较低，优化Prompt模板后显著提升；同步优化营养师服务流程，提升服务响应效率和用户满意度。\n" +
           "技术方案落地 ：集成大模型API与Redis缓存技术，平台平均加载时间控制在1.5秒内，线上Bug率低于5%，保障产品稳定运行。",
-      image: "/智能健康饮食系统.png"
+      image: "/智能健康饮食系统.jpg"
     },
     {
       id: 2,
@@ -52,11 +52,11 @@ const defaultData = {
       role: "产品负责人",
       period: "2025/04-2025/06",
       description: "用户需求挖掘: 通过走访养老社区、访谈 30 + 老年用户及家属，挖掘出“界面简洁、操作简单、实时掌握健康状态”的核心诉求，推动产品从“功能堆砌”转向“适老化设计”。\n适老化体验优化: 主导界面优化，将字体放大 20%，减少输入操作，支持语音录入，使老年用户独立操作成功率从 60% 提升至 85%；新增“健康异常预警”功能，当用户健康指标超出正常范围时自动通知家属，提升产品实用价值。\n快速迭代与验证: 采用敏捷开发模式，从需求调研到上线仅用 2 个月，快速验证产品价值；通过用户反馈（80 + 有效反馈）持续迭代，推动“健康趋势分析”等功能优化，用户满意度提升至 80%。\n跨角色协同设计: 协调医生、家属等多角色参与需求评审，设计“健康档案管理 + 异常预警 + 在线问诊”的闭环服务，平台数据同步效率达 100%，保障数据安全与实时性。",
-      image: "/养老健康服务平台.png"
+      image: "/养老健康服务平台.jpg"
     }
   ],
   certificates: [
-    { id: 1, name: "软件设计师（软考中级）", image: "/软件设计师（软考中级).png" },
+    { id: 1, name: "软件设计师（软考中级）", image: "/软件设计师（软考中级).jpg" },
     { id: 2, name: "CET-6", image: "/CET-6(460).png" },
     { id: 3, name: "CET-4", image: "/CET-4(491).png" },
     { id: 4, name: "驾驶证", image: "" },
@@ -111,11 +111,48 @@ export const useResumeData = () => {
   
   // Migration: Replace old placeholder avatar with new local one
   if (initialData.profile && initialData.profile.avatar && initialData.profile.avatar.includes('placeholder.com')) {
-    initialData.profile.avatar = '/卡通肖像.png';
+    initialData.profile.avatar = '/头像轮播图/1.jpg';
+  }
+
+  // 图片压缩后扩展名变了（png → jpg），但老访客的 localStorage 里还存着旧路径，
+  // 不改写的话头像/证书会 404。这里统一做一次映射。
+  const LEGACY_IMAGE_REWRITES = [
+    [/^\/头像轮播图\/(\d+)\.png$/, (m, n) => `/头像轮播图/${n}.jpg`],
+    [/^\/智能健康饮食系统\.png$/, () => '/智能健康饮食系统.jpg'],
+    [/^\/养老健康服务平台\.png$/, () => '/养老健康服务平台.jpg'],
+    [/^\/软件设计师（软考中级\)\.png$/, () => '/软件设计师（软考中级).jpg'],
+    [/^\/成绩单\.png$/, () => '/成绩单.jpg'],
+    [/^\/卡通肖像\.png$/, () => '/头像轮播图/1.jpg'],
+  ];
+  const migrateImage = (value) => {
+    if (typeof value !== 'string') return value;
+    for (const [pattern, build] of LEGACY_IMAGE_REWRITES) {
+      if (pattern.test(value)) return value.replace(pattern, build);
+    }
+    return value;
+  };
+
+  if (initialData.profile) {
+    initialData.profile.avatar = migrateImage(initialData.profile.avatar);
+    if (Array.isArray(initialData.profile.avatarList)) {
+      initialData.profile.avatarList = initialData.profile.avatarList.map(migrateImage);
+    }
+  }
+  if (Array.isArray(initialData.certificates)) {
+    initialData.certificates = initialData.certificates.map((cert) =>
+      cert && typeof cert === 'object' && cert.image ? { ...cert, image: migrateImage(cert.image) } : cert
+    );
+  }
+  if (Array.isArray(initialData.projects)) {
+    initialData.projects = initialData.projects.map((project) =>
+      project && typeof project === 'object' && project.image
+        ? { ...project, image: migrateImage(project.image) }
+        : project
+    );
   }
   if (Array.isArray(initialData.certificates)) {
     const certImageMap = {
-      "软件设计师（软考中级）": "/软件设计师（软考中级).png",
+      "软件设计师（软考中级）": "/软件设计师（软考中级).jpg",
       "CET-6": "/CET-6(460).png",
       "CET-6(460)": "/CET-6(460).png",
       "CET-4": "/CET-4(491).png",
@@ -144,9 +181,9 @@ export const useResumeData = () => {
       let updatedProject = cleaned === description ? project : { ...project, description: cleaned };
       if (!updatedProject.image) {
         if (updatedProject.title === '智能健康饮食系统') {
-          updatedProject.image = '/智能健康饮食系统.png';
+          updatedProject.image = '/智能健康饮食系统.jpg';
         } else if (updatedProject.title === '养老健康服务平台') {
-          updatedProject.image = '/养老健康服务平台.png';
+          updatedProject.image = '/养老健康服务平台.jpg';
         }
       }
       

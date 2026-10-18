@@ -20,6 +20,7 @@ import base64
 import getpass
 import os
 import shutil
+import stat
 import subprocess
 import sys
 import time
@@ -118,6 +119,46 @@ def sync(sftp, files, interactive):
     log(f"    上传 {uploaded} 个（{total_bytes/1024/1024:.1f}MB），跳过 {skipped} 个未变化")
 
 
+def prune(sftp, files):
+    """删除服务器 dist/ 下本地已不存在的文件
+
+    增量上传只覆盖不删除，图片改名（png→jpg）、删图之后旧文件会一直堆在服务器上。
+    这里以本地 dist 为准做一次对账，只清理 dist/ 内部，不碰 .env / knowledge / api。
+    """
+    log("3.5/5 清理 dist 孤儿文件")
+    local_rel = {p.relative_to(ROOT).as_posix() for p in files}
+    remote_dist = f"{APP}/dist"
+    removed = []
+    freed = 0
+
+    def walk(path, rel):
+        nonlocal freed
+        try:
+            entries = sftp.listdir_attr(path)
+        except IOError:
+            return
+        for attr in entries:
+            name = f"{rel}/{attr.filename}" if rel else attr.filename
+            full = f"{path}/{attr.filename}"
+            if stat.S_ISDIR(attr.st_mode):
+                walk(full, name)
+                continue
+            if f"dist/{name}" not in local_rel:
+                try:
+                    sftp.remove(full)
+                    removed.append(name)
+                    freed += attr.st_size or 0
+                except IOError as e:
+                    print(f"    删除失败 {name}: {e}")
+
+    walk(remote_dist, "")
+    if removed:
+        log(f"    删除 {len(removed)} 个（{freed/1024/1024:.1f}MB）：{', '.join(removed[:5])}"
+            + (" ..." if len(removed) > 5 else ""))
+    else:
+        log("    没有需要清理的文件")
+
+
 def restart(host, key, sudo_pass):
     log("4/5 重载服务")
     c = paramiko.SSHClient()
@@ -197,6 +238,7 @@ def main():
     c.get_transport().set_keepalive(15)
     sftp = c.open_sftp()
     sync(sftp, files, True)
+    prune(sftp, files)
     sftp.close()
     c.close()
 
