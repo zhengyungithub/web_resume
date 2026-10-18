@@ -52,6 +52,7 @@ npm start                 # 同时启动 Vite(5173) 和 Express(3000)
 | POST | `/api/chat/reload` | 重新扫描 `knowledge/` 并重建索引，同时清空回答缓存 |
 | POST | `/api/chat/clear-cache` | 只清空回答缓存 |
 | GET | `/api/health` | 进程存活、邮件与大模型配置状态 |
+| GET/POST | `/api/visit` | 浏览计数：POST 记录一次访问，GET 只读。数据存 `data/visits.json` |
 | POST | `/api/contact` | 访客留言，转发到邮箱 |
 
 ## 更新知识库

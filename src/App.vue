@@ -488,7 +488,7 @@
                 <i class="fas fa-comment-dots text-zen-green-500"></i>
                 联系表单
               </h3>
-              <div class="flex items-center gap-2 text-sm text-gray-600">
+              <div class="flex items-center gap-2 text-sm text-gray-600" v-if="visitorCount > 0">
                 <i class="fas fa-eye text-zen-green-500"></i>
                 <span>浏览次数: {{ visitorCount }}</span>
               </div>
@@ -1016,14 +1016,21 @@ const visitorStatus = ref('');
 const visitorErrorText = ref('');
 const visitorPageOpenAt = Date.now();
 
-// 浏览次数统计
+// 浏览次数统计：真实 PV，来自服务端 /api/visit（自建服务器持久化，Vercel 转发）。
+// 接口不可用时不显示数字，而不是退回假数据。
 const visitorCount = ref(0);
 
-const updateVisitorCount = () => {
-  const count = localStorage.getItem('visitor_count');
-  const newCount = count ? parseInt(count) + 1 : 1;
-  localStorage.setItem('visitor_count', newCount.toString());
-  visitorCount.value = newCount;
+const updateVisitorCount = async () => {
+  // 清掉旧版 localStorage 假计数，避免误导
+  localStorage.removeItem('visitor_count');
+  try {
+    const r = await fetch('/api/visit', { method: 'POST' });
+    if (!r.ok) return;
+    const j = await r.json();
+    if (typeof j.pv === 'number' && j.pv > 0 && !j.unavailable) {
+      visitorCount.value = j.pv;
+    }
+  } catch { /* 统计不可用，安静地隐藏 */ }
 };
 
 const submitVisitorForm = async () => {

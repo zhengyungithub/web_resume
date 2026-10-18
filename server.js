@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import contactHandler from './api/contact.js';
 import { createChatRouter } from './api/chat.js';
+import { createVisitRouter } from './api/visit.js';
 
 dotenv.config();
 
@@ -72,6 +73,8 @@ app.post('/api/contact', contactHandler);
 
 const chatRouter = createChatRouter();
 app.use('/api', chatRouter);
+
+app.use('/api/visit', createVisitRouter());
 
 // 未匹配的 API 一律返回 JSON，别掉进前端 index.html
 app.use('/api', (req, res) => {
