@@ -55,8 +55,8 @@ npm start                 # 同时启动 Vite(5173) 和 Express(3000)
 
 自建服务器（Nginx + PM2 + Let's Encrypt）的完整步骤见 [deploy/DEPLOY.md](deploy/DEPLOY.md)。
 
-日常发版：
+日常发版（本地执行，服务器无法访问 GitHub，故走增量上传）：
 
 ```bash
-bash deploy/deploy.sh
+python deploy/publish.py
 ```

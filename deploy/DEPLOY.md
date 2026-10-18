@@ -247,23 +247,35 @@ curl -s -X POST https://www.zhengyun.online/api/chat \
 
 ## 四、日常发版
 
-改完代码推到 GitHub，然后在服务器上：
+> ⚠️ **先看这条**：上海/广州等大陆节点实测**无法访问 github.com**（`git clone` 超时，`codeload` 仅 62KB/s）。
+> 因此服务器上的 `git pull` 方式（`deploy.sh`）在这类机房不可用。发布改为**本地构建 + 增量上传**。
+
+### 推荐方式：本地一键发布
+
+改完代码后，在**你自己的电脑**上执行：
+
+```bash
+cd "D:/项目码源/个人网站（简历版）/web-resume"
+python deploy/publish.py
+```
+
+它做的事：本地 `vite build` → SFTP 增量上传（只传有变化的文件，图片不变就不传）→ `pm2 reload` 平滑重启 → 线上自检。
+
+首次使用需要 `pip install paramiko`；会提示输入 ubuntu 的 sudo 密码。
+
+> 构建失败会直接中止，**线上继续跑旧版本**，不会出现半新半旧的站点。
+
+### 如果服务器能访问 GitHub（境外节点 / 已配加速）
 
 ```bash
 bash /var/www/zhengyun/app/deploy/deploy.sh
 ```
 
-脚本会：拉代码 → `npm ci` → 构建 → `pm2 reload`（平滑重启，不中断请求）→ 自检三连（后端健康、知识库状态、站点首页）。**构建失败时不会重启**，线上继续跑旧版本。
+脚本会：拉代码 → `npm ci` → 构建 → `pm2 reload` → 自检三连。同样保证「构建失败不重启」。
 
-回滚：
+### 回滚
 
-```bash
-cd /var/www/zhengyun/app
-git reset --hard $(cat /tmp/zhengyun_prev_rev)
-npm ci && npm run build && pm2 reload zhengyun-api
-```
-
-更省事的做法（可选）：在 GitHub 仓库加一个 Actions workflow，push 后自动 ssh 上去执行 `deploy.sh`。
+`publish.py` 的增量上传会让旧文件被覆盖，回滚靠重新发布：本地 `git checkout` 到上一个可用提交，再跑一次 `publish.py`。
 
 ---
 
