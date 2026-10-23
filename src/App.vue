@@ -579,6 +579,12 @@
         <p class="text-zen-green-400 text-sm">
           © {{ new Date().getFullYear() }} {{ data.profile.name }}. Updates ongoing, stay tuned.
         </p>
+        <p class="text-zen-green-400/70 text-xs mt-2">
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer"
+             class="hover:text-zen-green-300 transition-colors">
+            粤ICP备2026164325号-1
+          </a>
+        </p>
       </div>
     </section>
 
