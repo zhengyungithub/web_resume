@@ -82,10 +82,10 @@ const defaultData = {
 
   ],
   portfolio: [
-    { id: 1, title: "作品整理中", url: "", description: "作品案例正在整理，敬请期待完整版本" },
-    { id: 2, title: "更多作品筹备中", url: "", description: "新作品持续更新，敬请期待" },
-    { id: 3, title: "敬请期待", url: "", description: "完整作品集即将上线" },
-    { id: 4, title: "持续更新中", url: "", description: "更多内容陆续呈现" }
+    { id: 1, title: "作品整理中", url: "", cover: "", icon: "fa-box-open", description: "作品案例正在整理，敬请期待完整版本" },
+    { id: 2, title: "更多作品筹备中", url: "", cover: "", icon: "fa-rocket", description: "新作品持续更新，敬请期待" },
+    { id: 3, title: "敬请期待", url: "", cover: "", icon: "fa-palette", description: "完整作品集即将上线" },
+    { id: 4, title: "持续更新中", url: "", cover: "", icon: "fa-pen-fancy", description: "更多内容陆续呈现" }
   ],
   interests: [
     "摄影: 善于使用后期软件进行后期调色与构图优化，具备良好的审美能力与细节把控力，可辅助产品设计等内容。",
@@ -204,7 +204,7 @@ export const useResumeData = () => {
   // 项目/作品内容改版：强制刷新为 data.js 里的最新默认值。
   // 老访客的 localStorage 里存着旧内容，不清掉的话改版对存量访客不生效。
   // dataVersion 与 defaultData.projects / portfolio 内容绑定，更新内容时一起递增。
-  const PORTFOLIO_DATA_VERSION = 3;
+  const PORTFOLIO_DATA_VERSION = 4;
   if (initialData.dataVersion !== PORTFOLIO_DATA_VERSION) {
     initialData.projects = JSON.parse(JSON.stringify(defaultData.projects));
     initialData.portfolio = JSON.parse(JSON.stringify(defaultData.portfolio));

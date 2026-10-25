@@ -305,16 +305,25 @@
           </div>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-8">
-          <div v-for="item in data.portfolio" :key="item.id" class="bg-gradient-to-br from-white to-zen-green-50/20 rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-zen-green-100/50 group">
-            <div class="p-8">
-              <div class="flex justify-between items-start mb-4">
-                <div>
-                  <h4 class="text-xl font-bold text-gray-900 group-hover:text-zen-green-600 transition-colors">{{ item.title }}</h4>
-                  <p class="text-gray-600 text-sm leading-relaxed mt-2">{{ item.description }}</p>
-                </div>
+        <div class="relative">
+          <div ref="portfolioTrack" @scroll="onPortfolioScroll" class="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory no-scrollbar">
+            <div v-for="(item, index) in data.portfolio" :key="item.id" data-portfolio-card
+                 class="flex-shrink-0 w-[82vw] max-w-[320px] md:max-w-none md:w-[320px] snap-start bg-gradient-to-br from-white to-zen-green-50/20 rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-zen-green-100/50 group">
+              <div class="h-40 bg-gradient-to-br from-zen-green-100 to-zen-green-50 flex items-center justify-center overflow-hidden">
+                <img v-if="item.cover" :src="item.cover" :alt="item.title" class="w-full h-full object-cover" />
+                <i v-else :class="['fas', item.icon || 'fa-cube', 'text-4xl text-zen-green-400 group-hover:text-zen-green-600 transition-colors duration-500']"></i>
+              </div>
+              <div class="p-6">
+                <h4 class="text-lg font-bold text-gray-900 group-hover:text-zen-green-600 transition-colors">{{ item.title }}</h4>
+                <p class="text-gray-600 text-sm leading-relaxed mt-2">{{ item.description }}</p>
               </div>
             </div>
+          </div>
+          <div class="flex justify-center gap-2 mt-4">
+            <button v-for="(item, index) in data.portfolio" :key="'dot-' + item.id"
+                    @click="scrollToPortfolio(index)"
+                    :class="['h-2 rounded-full transition-all duration-300', index === portfolioActive ? 'w-5 bg-zen-green-600' : 'w-2 bg-zen-green-200 hover:bg-zen-green-400']"
+                    :aria-label="'切换到作品 ' + (index + 1)"></button>
           </div>
         </div>
       </div>
@@ -1217,6 +1226,28 @@ const openDocPlaceholder = (type) => {
   showDocumentModal.value = true;
 };
 
+// 作品集横向滑动
+const portfolioTrack = ref(null);
+const portfolioActive = ref(0);
+
+const onPortfolioScroll = () => {
+  const el = portfolioTrack.value;
+  if (!el) return;
+  const card = el.querySelector('[data-portfolio-card]');
+  const step = card ? card.offsetWidth + 24 : 320;
+  portfolioActive.value = Math.min(
+    (data.portfolio?.length || 1) - 1,
+    Math.max(0, Math.round(el.scrollLeft / step))
+  );
+};
+
+const scrollToPortfolio = (index) => {
+  const el = portfolioTrack.value;
+  if (!el || !el.children[index]) return;
+  const card = el.children[index];
+  el.scrollTo({ left: card.offsetLeft - el.offsetLeft, behavior: 'smooth' });
+};
+
 const nextPhoto = () => {
   prevPhotoIndex.value = currentPhotoIndex.value;
   currentPhotoIndex.value = (currentPhotoIndex.value + 1) % (photos.value?.length || 1);
@@ -1561,6 +1592,15 @@ html {
 
 .animate-pulse-slow:hover {
   animation: none;
+}
+
+/* 作品集横向滑动：隐藏滚动条 */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* 技能标签动画效果 */
