@@ -814,17 +814,15 @@
           </button>
         </div>
         <div class="p-8 text-center">
-          <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-zen-green-50 flex items-center justify-center">
-            <i class="fas fa-rocket text-4xl text-zen-green-500 animate-bounce"></i>
-          </div>
-          <h4 class="text-xl font-bold text-gray-800 mb-3">敬请期待</h4>
-          <p class="text-gray-600 leading-relaxed mb-6">
-            视频作品集功能正在筹备中<br>
-            新功能即将上线，敬请期待~
+          <img src="/视频号二维码.jpg" alt="微信视频号二维码" class="w-64 max-w-full mx-auto rounded-xl border border-zen-green-100 shadow-sm" />
+          <h4 class="text-xl font-bold text-gray-800 mt-6 mb-2">竹之青皮也</h4>
+          <p class="text-gray-600 leading-relaxed text-sm">
+            打开微信扫一扫，直达我的视频号主页<br>
+            观看视频作品
           </p>
-          <div class="flex items-center justify-center gap-2 text-sm text-zen-green-600">
-            <i class="fas fa-clock"></i>
-            <span>即将推出</span>
+          <div class="flex items-center justify-center gap-2 text-sm text-zen-green-600 mt-4">
+            <i class="fab fa-weixin"></i>
+            <span>微信扫一扫</span>
           </div>
         </div>
         <div class="px-6 pb-6">
@@ -1211,7 +1209,7 @@ const closePhotoGallery = () => {
 };
 
 const openVideoGallery = () => {
-  // 有视频号链接则直接跳转，否则显示提示弹窗
+  // 优先跳转视频号链接（若配置），否则弹出二维码扫码
   const url = data.profile?.videoChannelUrl;
   if (url) {
     window.open(url, '_blank', 'noopener,noreferrer');
