@@ -8,6 +8,8 @@ const defaultData = {
     email: "zhengyun_0629@qq.com",
     phone: "2746747178",
     location: "深圳、杭州、苏州、宁波",
+    // 微信视频号主页链接：填入后【视频作品集】按钮点击直接跳转；留空则显示提示弹窗
+    videoChannelUrl: "",
     avatar: "/头像轮播图/1.jpg",
     avatarList: ["/头像轮播图/1.jpg", "/头像轮播图/2.jpg", "/头像轮播图/3.jpg", "/头像轮播图/4.jpg", "/头像轮播图/5.jpg", "/头像轮播图/6.jpg", "/头像轮播图/7.jpg", "/头像轮播图/8.jpg", "/头像轮播图/9.jpg"]
   },

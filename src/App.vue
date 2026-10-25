@@ -1211,8 +1211,13 @@ const closePhotoGallery = () => {
 };
 
 const openVideoGallery = () => {
-  // 显示友好的提示弹窗
-  showVideoModal.value = true;
+  // 有视频号链接则直接跳转，否则显示提示弹窗
+  const url = data.profile?.videoChannelUrl;
+  if (url) {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  } else {
+    showVideoModal.value = true;
+  }
 };
 
 const openWritingGallery = () => {
