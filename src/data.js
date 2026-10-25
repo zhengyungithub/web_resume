@@ -36,23 +36,19 @@ const defaultData = {
   projects: [
     {
       id: 1,
-      title: "智能健康饮食系统",
-      role: "产品负责人",
-      period: "2025/06-2025/07",
-      description: "需求挖掘与定位 ：针对\"外卖商战内卷\"背景下年轻用户\"外卖饮食搭配不合理、营养摄入不均衡、部分群体对于健康饮食需求\"的情况下，明确\"AI饮食分析+营养师专业服务\"的产品定位，覆盖饮食记录管理、AI饮食分析、营养师服务等核心模块。\n" +
-          "AI应用与用户体验优化 ：调用大模型API，完成Prompt工程设计与业务场景封装，实现AI饮食分析报告自动生成；主导核心流程迭代，将用户记录饮食操作步骤从8步精简至3步，操作时长从3分钟缩短至1分钟，用户满意度提升至88%；搭建饮食健康智能问答功能，减轻人工咨询压力。\n" +
-          "跨团队协作与落地 ：协调团队解决AI结果解析、Redis缓存策略等技术难点，推动饮食记录、AI分析、营养师服务等核心功能落地；输出PRD、接口文档等10+份核心文档，建立前后端协作规范。\n" +
-          "数据驱动迭代 ：通过埋点追踪用户行为，发现AI分析结果采纳率较低，优化Prompt模板后显著提升；同步优化营养师服务流程，提升服务响应效率和用户满意度。\n" +
-          "技术方案落地 ：集成大模型API与Redis缓存技术，平台平均加载时间控制在1.5秒内，线上Bug率低于5%，保障产品稳定运行。",
-      image: "/智能健康饮食系统.jpg"
+      title: "项目案例更新中",
+      role: "产品实践",
+      period: "即将上线",
+      description: "新的项目案例正在整理与撰写中，本栏目即将更新为最新项目内容，敬请期待。",
+      image: ""
     },
     {
       id: 2,
-      title: "养老健康服务平台",
-      role: "产品负责人",
-      period: "2025/04-2025/06",
-      description: "用户需求挖掘: 通过走访养老社区、访谈 30 + 老年用户及家属，挖掘出“界面简洁、操作简单、实时掌握健康状态”的核心诉求，推动产品从“功能堆砌”转向“适老化设计”。\n适老化体验优化: 主导界面优化，将字体放大 20%，减少输入操作，支持语音录入，使老年用户独立操作成功率从 60% 提升至 85%；新增“健康异常预警”功能，当用户健康指标超出正常范围时自动通知家属，提升产品实用价值。\n快速迭代与验证: 采用敏捷开发模式，从需求调研到上线仅用 2 个月，快速验证产品价值；通过用户反馈（80 + 有效反馈）持续迭代，推动“健康趋势分析”等功能优化，用户满意度提升至 80%。\n跨角色协同设计: 协调医生、家属等多角色参与需求评审，设计“健康档案管理 + 异常预警 + 在线问诊”的闭环服务，平台数据同步效率达 100%，保障数据安全与实时性。",
-      image: "/养老健康服务平台.jpg"
+      title: "更多项目筹备中",
+      role: "产品实践",
+      period: "敬请期待",
+      description: "第二个项目内容筹备中。欢迎通过页面底部的留言表单或 AI 助手与我交流。",
+      image: ""
     }
   ],
   certificates: [
@@ -236,6 +232,15 @@ export const useResumeData = () => {
   // Migration: Update email address
   if (initialData.profile && initialData.profile.email === 'zhengyun_job@163.com') {
     initialData.profile.email = defaultData.profile.email;
+  }
+
+  // 项目内容改版：强制刷新为 data.js 里的最新默认值。
+  // 老访客的 localStorage 里存着旧项目全文，不清掉的话改版对存量访客不生效。
+  // dataVersion 与 defaultData.projects 内容绑定，更新项目内容时一起递增。
+  const PROJECTS_DATA_VERSION = 2;
+  if (initialData.dataVersion !== PROJECTS_DATA_VERSION) {
+    initialData.projects = JSON.parse(JSON.stringify(defaultData.projects));
+    initialData.dataVersion = PROJECTS_DATA_VERSION;
   }
 
   const data = reactive(initialData);
