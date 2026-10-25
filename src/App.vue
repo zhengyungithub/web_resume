@@ -305,7 +305,6 @@
           </div>
         </div>
 
-        <h3 class="text-2xl font-bold text-gray-900 mb-6">原型作品集</h3>
         <div class="grid md:grid-cols-2 gap-8">
           <div v-for="item in data.portfolio" :key="item.id" class="bg-gradient-to-br from-white to-zen-green-50/20 rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-zen-green-100/50 group">
             <div class="p-8">
@@ -315,14 +314,6 @@
                   <p class="text-gray-600 text-sm leading-relaxed mt-2">{{ item.description }}</p>
                 </div>
               </div>
-              <button v-if="item.title === '养老健康服务平台前端功能原型演示'" @click="openRoleModal" class="inline-flex items-center gap-2 px-4 py-2 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-full shadow-md transition-all transform hover:-translate-y-0.5">
-                <i class="fas fa-external-link-alt"></i>
-                <span>访问链接</span>
-              </button>
-              <a v-else :href="item.url" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-full shadow-md transition-all transform hover:-translate-y-0.5">
-                <i class="fas fa-external-link-alt"></i>
-                <span>访问链接</span>
-              </a>
             </div>
           </div>
         </div>
@@ -895,40 +886,6 @@
           <button @click="showDocumentModal = false" class="w-full py-3 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5">
             知道了
           </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 角色选择模态框 -->
-    <div v-if="showRoleModal" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm" @click="closeRoleModal">
-      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-zen-green-100" @click.stop>
-        <div class="bg-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100 sticky top-0 z-10 backdrop-blur-md bg-white/90">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-zen-green-50 border border-zen-green-100 flex items-center justify-center text-zen-green-700">
-              <i class="fas fa-user-alt text-lg"></i>
-            </div>
-            <h3 class="text-gray-900 text-lg font-semibold">选择角色</h3>
-          </div>
-          <button @click="closeRoleModal" class="text-gray-500 hover:text-gray-900 transition-colors w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50">
-            <i class="fas fa-times text-lg"></i>
-          </button>
-        </div>
-        <div class="p-8">
-          <p class="text-gray-600 text-center mb-8">请选择您要查看的角色界面</p>
-          <div class="space-y-4">
-            <button @click="navigateToRolePage('doctor')" class="w-full py-4 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-              <i class="fas fa-user-md"></i>
-              <span>医生端</span>
-            </button>
-            <button @click="navigateToRolePage('family')" class="w-full py-4 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-              <i class="fas fa-users"></i>
-              <span>家属端</span>
-            </button>
-            <button @click="navigateToRolePage('elderly')" class="w-full py-4 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-              <i class="fas fa-user"></i>
-              <span>老人端</span>
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -1569,35 +1526,6 @@ const panTranscriptOnMove = (event) => {
   if (maxTop > 0) el.scrollTop = maxTop * Math.min(Math.max(y, 0), 1);
 };
 
-// 角色选择模态框
-const showRoleModal = ref(false);
-
-const openRoleModal = () => {
-  showRoleModal.value = true;
-};
-
-const closeRoleModal = () => {
-  showRoleModal.value = false;
-};
-
-const navigateToRolePage = (role) => {
-  let url = '';
-  switch (role) {
-    case 'doctor':
-      url = '/templates/医生问诊.html';
-      break;
-    case 'family':
-      url = '/templates/异常预警.html';
-      break;
-    case 'elderly':
-      url = '/templates/健康数据录入.html';
-      break;
-    default:
-      url = '/养老健康服务平台首页.html';
-  }
-  window.open(url, '_blank');
-  closeRoleModal();
-};
 </script><style>
 html {
   scroll-behavior: smooth;

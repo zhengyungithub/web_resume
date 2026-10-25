@@ -82,10 +82,10 @@ const defaultData = {
 
   ],
   portfolio: [
-    { id: 1, title: "练习作品集", url: "https://www.figma.com/design/go7j4Nf3wfWd2XYmCI2MRT/%E2%80%9D%E8%BD%BB%E4%BA%AB%E7%94%9F%E6%B4%BB%E2%80%9Capp%E7%BB%83%E4%B9%A0%E9%A1%B9%E7%9B%AE?node-id=0-1&t=sVzlYk1HZ4wMU6L8-1", description: "‘轻享生活'app figma练习项目" },
-    { id: 2, title: "养老健康服务平台前端功能原型演示", url: "/养老健康服务平台首页.html", description: "养老健康服务平台项目的MVP核心功能（健康数据录入+健康数据管理+健康趋势分析+风险健康评估+异常预警（家属端）+在线咨询+医生问诊+健康资讯推送）" },
-    { id: 3, title: "智能健康系统原型集合", url: "https://www.figma.com/design/yPQAJ4op5TFpmkTrPaw1A9/%E6%99%BA%E8%83%BD%E5%81%A5%E5%BA%B7%E9%A5%AE%E9%A3%9F%E7%B3%BB%E7%BB%9F?node-id=0-1&t=ssMv3xinZlHeBCVg-1", description: "智能健康饮食系统项目的figma部分原型设计" },
-    { id: 4, title: "前端功能原型演示", url: "/前端演示功能交互/4.html", description: "电力交易平台-AI智能助手（HTML Demo）" }
+    { id: 1, title: "作品整理中", url: "", description: "作品案例正在整理，敬请期待完整版本" },
+    { id: 2, title: "更多作品筹备中", url: "", description: "新作品持续更新，敬请期待" },
+    { id: 3, title: "敬请期待", url: "", description: "完整作品集即将上线" },
+    { id: 4, title: "持续更新中", url: "", description: "更多内容陆续呈现" }
   ],
   interests: [
     "摄影: 善于使用后期软件进行后期调色与构图优化，具备良好的审美能力与细节把控力，可辅助产品设计等内容。",
@@ -114,8 +114,6 @@ export const useResumeData = () => {
   // 不改写的话头像/证书会 404。这里统一做一次映射。
   const LEGACY_IMAGE_REWRITES = [
     [/^\/头像轮播图\/(\d+)\.png$/, (m, n) => `/头像轮播图/${n}.jpg`],
-    [/^\/智能健康饮食系统\.png$/, () => '/智能健康饮食系统.jpg'],
-    [/^\/养老健康服务平台\.png$/, () => '/养老健康服务平台.jpg'],
     [/^\/软件设计师（软考中级\)\.png$/, () => '/软件设计师（软考中级).jpg'],
     [/^\/成绩单\.png$/, () => '/成绩单.jpg'],
     [/^\/卡通肖像\.png$/, () => '/头像轮播图/1.jpg'],
@@ -172,18 +170,7 @@ export const useResumeData = () => {
         .replaceAll('</strong>', '')
         .replaceAll('&lt;strong&gt;', '')
         .replaceAll('&lt;/strong&gt;', '');
-      
-      // Add image if not exists
-      let updatedProject = cleaned === description ? project : { ...project, description: cleaned };
-      if (!updatedProject.image) {
-        if (updatedProject.title === '智能健康饮食系统') {
-          updatedProject.image = '/智能健康饮食系统.jpg';
-        } else if (updatedProject.title === '养老健康服务平台') {
-          updatedProject.image = '/养老健康服务平台.jpg';
-        }
-      }
-      
-      return updatedProject;
+      return cleaned === description ? project : { ...project, description: cleaned };
     });
   }
   if (Array.isArray(initialData.skills)) {
@@ -209,38 +196,19 @@ export const useResumeData = () => {
     });
   }
   
-  // Migration: Add portfolio if not exists
-  if (!Array.isArray(initialData.portfolio)) {
-    initialData.portfolio = defaultData.portfolio;
-  } else {
-    initialData.portfolio = initialData.portfolio.map((item) => {
-      if (!item || typeof item !== 'object') return item;
-      const idOk = String(item.id) === '4';
-      const titleOk = item.title === 'GitHub 代码仓库';
-      const urlOk = item.url === 'https://github.com' || item.url === 'http://github.com';
-      if (!(idOk || titleOk || urlOk)) return item;
-      if (item.url && String(item.url).includes('/前端演示功能交互/4.html')) return item;
-      return {
-        ...item,
-        title: item.title === 'GitHub 代码仓库' ? '前端功能原型演示' : item.title,
-        description: item.description === '我的开源项目和代码仓库' ? '电力交易平台-AI智能助手（HTML Demo）' : item.description,
-        url: '/前端演示功能交互/4.html'
-      };
-    });
-  }
-  
   // Migration: Update email address
   if (initialData.profile && initialData.profile.email === 'zhengyun_job@163.com') {
     initialData.profile.email = defaultData.profile.email;
   }
 
-  // 项目内容改版：强制刷新为 data.js 里的最新默认值。
-  // 老访客的 localStorage 里存着旧项目全文，不清掉的话改版对存量访客不生效。
-  // dataVersion 与 defaultData.projects 内容绑定，更新项目内容时一起递增。
-  const PROJECTS_DATA_VERSION = 2;
-  if (initialData.dataVersion !== PROJECTS_DATA_VERSION) {
+  // 项目/作品内容改版：强制刷新为 data.js 里的最新默认值。
+  // 老访客的 localStorage 里存着旧内容，不清掉的话改版对存量访客不生效。
+  // dataVersion 与 defaultData.projects / portfolio 内容绑定，更新内容时一起递增。
+  const PORTFOLIO_DATA_VERSION = 3;
+  if (initialData.dataVersion !== PORTFOLIO_DATA_VERSION) {
     initialData.projects = JSON.parse(JSON.stringify(defaultData.projects));
-    initialData.dataVersion = PROJECTS_DATA_VERSION;
+    initialData.portfolio = JSON.parse(JSON.stringify(defaultData.portfolio));
+    initialData.dataVersion = PORTFOLIO_DATA_VERSION;
   }
 
   const data = reactive(initialData);
