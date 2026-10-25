@@ -70,7 +70,8 @@ const defaultData = {
     { name: "需求文档", level: 85, description: "撰写 PRD / SOP / 会议纪要等产品文档" },
     { name: "功能验收与 Bug 回归", level: 80, description: "功能验收测试与 Bug 回归跟踪，保障迭代质量" },
     { name: "Agent 设计与协同工作", level: 80, description: "Agent 的设计规划与多角色协同工作" },
-    { name: "Skill / MCP / Function Calling", level: 75, description: "为 Agent 扩展能力：Skill 封装、MCP 协议接入与 Function Calling" }
+    { name: "Skill / MCP / Function Calling", level: 75, description: "为 Agent 扩展能力：Skill 封装、MCP 协议接入与 Function Calling" },
+    { name: "逆向工程", level: 75, description: "通过反编译、动态调试等手段分析程序结构与实现逻辑，理解底层机制" }
   ],
   portfolio: [
     { id: 1, title: "作品整理中", url: "", cover: "", icon: "fa-box-open", description: "作品案例正在整理，敬请期待完整版本" },
@@ -195,7 +196,7 @@ export const useResumeData = () => {
   // 项目/作品/技能内容改版：强制刷新为 data.js 里的最新默认值。
   // 老访客的 localStorage 里存着旧内容，不清掉的话改版对存量访客不生效。
   // dataVersion 与 defaultData 内容绑定，更新内容时一起递增。
-  const SKILLS_DATA_VERSION = 5;
+  const SKILLS_DATA_VERSION = 6;
   if (initialData.dataVersion !== SKILLS_DATA_VERSION) {
     initialData.projects = JSON.parse(JSON.stringify(defaultData.projects));
     initialData.portfolio = JSON.parse(JSON.stringify(defaultData.portfolio));
