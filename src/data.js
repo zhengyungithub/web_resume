@@ -59,27 +59,18 @@ const defaultData = {
     { id: 5, name: "普通话二甲", image: "/普通话证书.png" }
   ],
   skills: [
-    { name: "vibe coding", level: 80 },
-    { name: "Cursor/TRAE", level: 80 },
-    { name: "Figma/Axure", level: 75 },
-    { name: "Processon/Xmind/Visio", level: 85 },
-    { name: "Excel/PPT/Word", level: 80 },
-    { name: "Vue3/HTML/CSS/JS", level: 75 },
-    { name: "Java/Spring Boot", level: 85 },
-    { name: "敏捷开发(mvp迭代)", level: 80 },
-    { name: "RAG", level: 75 },
-    { name: "Prompt", level: 80 },
-    { name: "Coze", level: 85 },
-    { name: "AI Workflow", level: 80 },
-    { name: "Agent", level: 80 },
-    { name: "大模型应用", level: 80 },
-    { name: "AIGC", level: 80 },
-    { name: "Power BI", level: 80 },
-    { name: "SQL", level: 80 },
-    { name: "Git", level: 80 },
-    { name: "SQL", level: 80 },
-    { name: "PRD", level: 80 }
-
+    { name: "RAG / 向量检索 / 知识库", level: 80, description: "检索增强生成：通过向量检索与知识库让 AI 回答有据可依。案例：本站 AI 问答助手的知识库检索" },
+    { name: "AI Coding", level: 80, description: "AI 辅助编程：Trae / WorkBuddy / Codex / Claude Code 等，覆盖需求拆解、编码、调试全流程" },
+    { name: "Python / Java / API 调用", level: 80, description: "后端脚本与接口开发：Python / Java 编程、第三方 API 集成与调用" },
+    { name: "数据库 / Linux 基础部署", level: 80, description: "数据库设计与查询，Linux 服务器环境下的应用部署与运维" },
+    { name: "Coze / Dify 低代码工作流", level: 85, description: "在 Coze / Dify 等低代码平台搭建 AI 工作流，快速编排节点、插件与知识库" },
+    { name: "AI 辅助产品设计", level: 80, description: "用 AI 辅助完成产品设计的完整输出：流程梳理、原型、文档与验收" },
+    { name: "业务流程梳理", level: 85, description: "使用 Visio / ProcessOn / Xmind 梳理业务流程与需求结构" },
+    { name: "原型设计", level: 80, description: "使用墨刀 / Figma 完成产品原型与交互设计" },
+    { name: "需求文档", level: 85, description: "撰写 PRD / SOP / 会议纪要等产品文档" },
+    { name: "功能验收与 Bug 回归", level: 80, description: "功能验收测试与 Bug 回归跟踪，保障迭代质量" },
+    { name: "Agent 设计与协同工作", level: 80, description: "Agent 的设计规划与多角色协同工作" },
+    { name: "Skill / MCP / Function Calling", level: 75, description: "为 Agent 扩展能力：Skill 封装、MCP 协议接入与 Function Calling" }
   ],
   portfolio: [
     { id: 1, title: "作品整理中", url: "", cover: "", icon: "fa-box-open", description: "作品案例正在整理，敬请期待完整版本" },
@@ -201,14 +192,15 @@ export const useResumeData = () => {
     initialData.profile.email = defaultData.profile.email;
   }
 
-  // 项目/作品内容改版：强制刷新为 data.js 里的最新默认值。
+  // 项目/作品/技能内容改版：强制刷新为 data.js 里的最新默认值。
   // 老访客的 localStorage 里存着旧内容，不清掉的话改版对存量访客不生效。
-  // dataVersion 与 defaultData.projects / portfolio 内容绑定，更新内容时一起递增。
-  const PORTFOLIO_DATA_VERSION = 4;
-  if (initialData.dataVersion !== PORTFOLIO_DATA_VERSION) {
+  // dataVersion 与 defaultData 内容绑定，更新内容时一起递增。
+  const SKILLS_DATA_VERSION = 5;
+  if (initialData.dataVersion !== SKILLS_DATA_VERSION) {
     initialData.projects = JSON.parse(JSON.stringify(defaultData.projects));
     initialData.portfolio = JSON.parse(JSON.stringify(defaultData.portfolio));
-    initialData.dataVersion = PORTFOLIO_DATA_VERSION;
+    initialData.skills = JSON.parse(JSON.stringify(defaultData.skills));
+    initialData.dataVersion = SKILLS_DATA_VERSION;
   }
 
   const data = reactive(initialData);

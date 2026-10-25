@@ -389,16 +389,25 @@
           </div>
           <div class="bg-gradient-to-br from-zen-green-50/50 to-white rounded-[2.5rem] p-8 border border-zen-green-100/50 shadow-inner">
             <div class="flex flex-wrap gap-4">
-              <div v-for="(skill, index) in normalizedSkills" :key="skill.id || skill.name || index" 
-                   class="bg-white rounded-xl shadow-sm border border-gray-100 px-3 py-1.5 hover:shadow-md transition-all relative w-fit max-w-full overflow-hidden group"
+              <div v-for="(skill, index) in normalizedSkills" :key="skill.id || skill.name || index"
+                   class="group/skill bg-white rounded-xl shadow-sm border border-gray-100 px-3 py-1.5 hover:shadow-md transition-all relative w-fit max-w-full overflow-visible cursor-default"
                    :class="isEditMode ? 'pr-14' : ''"
                    :style="{ animationDelay: `${index * 0.05}s` }">
                 <!-- 背景渐变效果 -->
-                <div class="absolute inset-0 bg-gradient-to-r from-zen-green-100/0 to-zen-green-100/0 group-hover:from-zen-green-100/30 group-hover:to-zen-green-100/10 transition-all duration-300"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-zen-green-100/0 to-zen-green-100/0 group-hover/skill:from-zen-green-100/30 group-hover/skill:to-zen-green-100/10 transition-all duration-300"></div>
                 <!-- 发光效果 -->
-                <div class="absolute -inset-0.5 bg-gradient-to-r from-zen-green-400/0 to-zen-green-500/0 rounded-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300 blur-sm"></div>
+                <div class="absolute -inset-0.5 bg-gradient-to-r from-zen-green-400/0 to-zen-green-500/0 rounded-xl opacity-0 group-hover/skill:opacity-30 transition-opacity duration-300 blur-sm"></div>
                 <!-- 技能名称 -->
-                <div class="text-gray-800 font-medium truncate relative z-10 group-hover:text-zen-green-700 transition-colors duration-300">{{ skill.name }}</div>
+                <div class="text-gray-800 font-medium truncate relative z-10 group-hover/skill:text-zen-green-700 transition-colors duration-300">{{ skill.name }}</div>
+                <!-- 悬浮描述气泡 -->
+                <div v-if="skill.description && !isEditMode"
+                     class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-60 z-30 opacity-0 translate-y-1 group-hover/skill:opacity-100 group-hover/skill:translate-y-0 transition-all duration-200">
+                  <div class="bg-white border border-zen-green-100 rounded-xl shadow-lg p-3 relative">
+                    <p class="text-xs text-gray-600 leading-relaxed">{{ skill.description }}</p>
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-px w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-zen-green-100"></div>
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 mt-[5px] w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>
+                  </div>
+                </div>
                 <!-- 编辑模式按钮 -->
                 <div v-if="isEditMode" class="absolute top-2 right-2 flex gap-1 relative z-20">
                   <button v-if="deleteMode === 'skill'" @click.stop="deleteItem('skills', index)" class="w-6 h-6 rounded-full bg-red-100 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all text-xs transform hover:scale-110" title="删除技能">
@@ -1428,7 +1437,9 @@ const handleSave = (formData) => {
   } else if (currentSection.value === 'skill') {
     const parsed = Number(formData.level);
     const level = Number.isFinite(parsed) ? Math.max(0, Math.min(100, parsed)) : 80;
-    const skillData = { name: formData.name, level };
+    // 保留原有 description（悬浮描述），编辑弹窗只改名称与等级
+    const base = editIndex.value !== null ? (data.skills[editIndex.value] || {}) : {};
+    const skillData = { ...base, name: formData.name, level };
     if (editIndex.value !== null) {
       const updatedSkills = [...data.skills];
       updatedSkills[editIndex.value] = skillData;
