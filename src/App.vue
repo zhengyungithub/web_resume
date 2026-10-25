@@ -279,14 +279,14 @@
               </p>
 
               <div class="flex flex-wrap gap-3">
-                <a href="https://ycnv3va6cnba.feishu.cn/wiki/E2k5wMjAXiZGaskU2E9ceLdXnve?from=from_copylink" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-zen-green-50 text-zen-green-700 font-medium rounded-lg border border-zen-green-100 hover:bg-zen-green-100 transition-all text-sm flex items-center gap-2">
+                <button @click="openDocPlaceholder('需求文档')" class="px-4 py-2 bg-zen-green-50 text-zen-green-700 font-medium rounded-lg border border-zen-green-100 hover:bg-zen-green-100 transition-all text-sm flex items-center gap-2">
                   <i class="fas fa-file-alt"></i>
                   <span>需求文档</span>
-                </a>
-                <a href="https://ycnv3va6cnba.feishu.cn/wiki/LI4mwZLoLi5KF8kbAzvcUmFdnfW?from=from_copylink" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-zen-green-50 text-zen-green-700 font-medium rounded-lg border border-zen-green-100 hover:bg-zen-green-100 transition-all text-sm flex items-center gap-2">
+                </button>
+                <button @click="openDocPlaceholder('产品设计文档')" class="px-4 py-2 bg-zen-green-50 text-zen-green-700 font-medium rounded-lg border border-zen-green-100 hover:bg-zen-green-100 transition-all text-sm flex items-center gap-2">
                   <i class="fas fa-pen-fancy"></i>
                   <span>产品设计文档</span>
-                </a>
+                </button>
               </div>
 
             </div>
@@ -862,41 +862,6 @@
       </div>
     </div>
 
-    <!-- Download Confirmation Modal -->
-    <div v-if="showDownloadConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm" @click="cancelDownload">
-      <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-zen-green-100" @click.stop>
-        <div class="bg-white px-6 py-5 flex justify-between items-center border-b border-zen-green-100 sticky top-0 z-10 backdrop-blur-md bg-white/90">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-zen-green-50 border border-zen-green-100 flex items-center justify-center text-zen-green-700">
-              <i class="fas fa-file-alt text-lg"></i>
-            </div>
-            <h3 class="text-gray-900 text-lg font-semibold">确认下载</h3>
-          </div>
-          <button @click="cancelDownload" class="text-gray-500 hover:text-gray-900 transition-colors w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-50">
-            <i class="fas fa-times text-lg"></i>
-          </button>
-        </div>
-        <div class="p-8">
-          <div class="text-center mb-6">
-            <div class="text-4xl mb-4 text-zen-green-600">
-              <i class="fas fa-file-download"></i>
-            </div>
-            <h4 class="text-xl font-semibold text-gray-900 mb-2">是否要下载查看文档？</h4>
-            <p class="text-gray-600 mt-2">{{ downloadFileName }}</p>
-            <p class="text-gray-500 text-sm mt-4">点击"确定"后，文件将自动下载，下载完成后请在本地打开查看完整内容</p>
-          </div>
-          <div class="flex gap-4">
-            <button @click="cancelDownload" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-xl transition-all transform hover:-translate-y-0.5">
-              不用了
-            </button>
-            <button @click="confirmDownload" class="flex-1 py-3 bg-zen-green-600 hover:bg-zen-green-700 text-white font-medium rounded-xl shadow-lg shadow-zen-green-200 transition-all transform hover:-translate-y-0.5">
-              确定
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Document Detail Modal -->
     <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-zen-green-900/20 backdrop-blur-sm" @click="showDocumentModal = false">
       <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden border border-zen-green-100" @click.stop>
@@ -1287,47 +1252,12 @@ const currentDocumentProject = ref('');
 const prdContent = ref('');
 const isLoadingPrd = ref(false);
 
-// Download confirmation modal
-const showDownloadConfirmModal = ref(false);
-const downloadFileName = ref('');
-
-const openDocumentModal = (type, project) => {
+// 文档按钮占位提示（旧文档内容已清除，新文档上线前仅提示）
+const openDocPlaceholder = (type) => {
   currentDocumentType.value = type;
-  currentDocumentProject.value = project;
-  
-  // 显示下载确认模态框
-  if (project.includes('养老健康服务平台')) {
-    let fileName = '';
-    if (type === '需求文档') {
-      fileName = '养老健康服务平台PRD文档 (1).docx';
-    } else if (type === '产品设计文档') {
-      fileName = '养老健康服务平台产品设计文档 (1).docx';
-    }
-
-    downloadFileName.value = fileName;
-    showDownloadConfirmModal.value = true;
-  } else {
-    prdContent.value = '文档内容正在整理中，敬请期待完整版本';
-    showDocumentModal.value = true;
-  }
-};
-
-const confirmDownload = () => {
-  // 确认下载
-  const link = document.createElement('a');
-  link.href = `/${downloadFileName.value}`;
-  link.download = downloadFileName.value;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  
-  // 关闭确认模态框
-  showDownloadConfirmModal.value = false;
-};
-
-const cancelDownload = () => {
-  // 取消下载，关闭确认模态框
-  showDownloadConfirmModal.value = false;
+  currentDocumentProject.value = '项目案例';
+  prdContent.value = '';
+  showDocumentModal.value = true;
 };
 
 const nextPhoto = () => {
