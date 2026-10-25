@@ -193,6 +193,27 @@
             </div>
           </div>
         </div>
+
+        <!-- Work Experience (Full Width) -->
+        <div class="mt-8 bg-gradient-to-br from-white to-zen-green-50 rounded-[2rem] p-8 border border-zen-green-100/60 shadow-md relative group/jobexp hover:shadow-xl hover:to-zen-green-100 transition-all duration-500 hover:-translate-y-1">
+          <h3 id="work-exp" class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <i class="fas fa-user-tie text-zen-green-500"></i> 工作经历
+          </h3>
+          <div class="border-l-2 border-zen-green-200 pl-4 ml-1 relative">
+            <div class="absolute -left-[21px] top-1 w-3 h-3 bg-zen-green-500 rounded-full ring-4 ring-zen-green-50"></div>
+            <div class="flex justify-between items-start flex-wrap gap-2 mb-2">
+              <h4 class="font-semibold text-lg text-gray-800">珠海格力电器股份有限公司</h4>
+              <span class="text-sm text-zen-green-600 font-medium bg-zen-green-100/80 px-3 py-0.5 rounded-full shadow-sm">2026/07-2027/01</span>
+            </div>
+            <p class="text-zen-green-600 mb-4">HR 数字化产品专员</p>
+            <ul class="text-sm text-gray-500 space-y-2 leading-relaxed">
+              <li><strong class="font-semibold text-gray-900">系统运维与测试</strong>：作为业务方负责格慧招聘校招期间日常运维与功能测试，覆盖笔试、面试、资料审核、Offer 发放、报到审核等全链路模块；</li>
+              <li><strong class="font-semibold text-gray-900">业务流程梳理</strong>：入职后主动以产品经理视角走查系统设计逻辑，从用户（学生、HR、面试官）三方路径梳理业务链路，输出功能清单以及业务流程图等产品设计文档；负责绘制新需求（三方签约后入职报到）业务流程图，并借助 AI 工具输出原型图等产品方案，辅助向研发侧说明操作路径与节点交互；</li>
+              <li><strong class="font-semibold text-gray-900">需求协同与迭代</strong>：基于校招期间收集三方（学生、HR、面试官）使用反馈沉淀业务痛点并提出系统优化需求点；参与 AI 资料审核需求评审，复述业务规则与异常场景，协助对齐"AI 初审 + 人工复核"人机边界与验收指标，跟进功能验收与 Bug 回归闭环，配合开发团队迭代优化系统流程，提升招聘效率与候选人应聘体验；</li>
+              <li><strong class="font-semibold text-gray-900">校招全流程执行</strong>：参与多站点校招一线执行，含笔试／面试组织、面试间叫号控场、候选人资料审核与问题响应、Offer 与拒信发送，并负责校招咨询邮箱值守与应届生违约业务的流程梳理与数据通报。</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
     
