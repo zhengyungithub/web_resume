@@ -1,5 +1,6 @@
 // nginx 日志解析层：把一行 access.log 拆成可统计的字段
-// 设计目标：不存原始 IP（只做 UV 哈希），机器人流量单独计数不计入 PV
+// 隐私口径（方案 B）：IP 只随「最近 200 条实时记录」短期保留，按天聚合桶不落 IP；
+// 看板默认掩码展示，需手动展开。UV 去重仍用不可逆哈希，不依赖明文 IP。
 
 import crypto from 'node:crypto';
 
@@ -107,6 +108,7 @@ export function parseLine(line) {
   return {
     date,
     time: `${hh}:${mi}`,
+    ip,
     page: pageLabel,
     source: classifySource(referer),
     refererHost: safeHost(referer),

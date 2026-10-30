@@ -3,6 +3,9 @@
 // 为什么不是 SQLite：线上 node 20 没有内置 node:sqlite，better-sqlite3 需要原生编译，
 // 而个人站每天只有几十次访问 —— JSON 聚合结果几十 KB，全量读进内存完全够用，
 // 部署零依赖、坏文件也能一眼看懂。
+//
+// 隐私：按天桶只存邮箱式聚合（来源/设备/页面），不落 IP；
+// 明文 IP 仅存在于 recent 末尾 KEEP_RECENT 条记录中，随滚动自动淘汰。
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -159,6 +162,7 @@ export function collect() {
 
     db.recent.push({
       t: `${rec.date} ${rec.time}`,
+      ip: rec.ip || '',
       page: rec.page,
       source: rec.source,
       device: rec.device,

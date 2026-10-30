@@ -11,7 +11,7 @@
         <input v-model="password" type="password" placeholder="访问密码" autocomplete="current-password" />
         <button type="submit" :disabled="loading || !password">{{ loading ? '验证中…' : '进入看板' }}</button>
         <p v-if="error" class="err">{{ error }}</p>
-        <p class="tip">数据来源：服务器访问日志，已过滤爬虫与扫描器，不保存访客 IP</p>
+        <p class="tip">数据来源：服务器访问日志，已过滤爬虫与扫描器；完整 IP 仅短期保留，用于识别回访与安全分析</p>
       </form>
     </div>
 
@@ -109,14 +109,20 @@
         <section class="panel">
           <div class="panel-head">
             <h2>实时访客</h2>
-            <span class="live">最近 20 条</span>
+            <div class="head-tools">
+              <span class="live">最近 20 条</span>
+              <button class="mini" @click="showFullIp = !showFullIp">
+                {{ showFullIp ? '隐藏 IP' : '显示完整 IP' }}
+              </button>
+            </div>
           </div>
           <div v-if="data?.recent?.length" class="recent">
             <div class="row head-row">
-              <span>时间</span><span>页面</span><span>来源</span><span>设备</span>
+              <span>时间</span><span>来源 IP</span><span>页面</span><span>来源</span><span>设备</span>
             </div>
             <div v-for="(v, i) in data.recent" :key="i" class="row">
               <span class="t">{{ (v.t || '').slice(5) }}</span>
+              <span class="ip">{{ showFullIp ? (v.ip || '—') : maskIp(v.ip) }}</span>
               <span class="trunc">{{ v.page }}</span>
               <span>{{ v.source }}</span>
               <span class="trunc">{{ v.device }} · {{ v.browser }}</span>
@@ -127,7 +133,7 @@
       </div>
 
       <footer class="foot">
-        数据每 10 分钟从访问日志增量汇总一次 · 不保存原始 IP · 爬虫与扫描器已单独隔离计数
+        数据每 10 分钟从访问日志增量汇总一次 · 完整 IP 仅保留最近 200 条实时记录，用于识别回访与安全分析
       </footer>
     </div>
   </div>
@@ -156,6 +162,19 @@ const refreshing = ref(false);
 const error = ref('');
 const range = ref(30);
 const data = ref(null);
+const showFullIp = ref(false);
+
+// 默认掩码：IPv4 隐藏最后一段，IPv6 隐藏后 4 组
+function maskIp(ip) {
+  if (!ip) return '—';
+  if (ip.includes(':')) {
+    const parts = ip.split(':');
+    return `${parts.slice(0, 4).join(':')}:****`;
+  }
+  const seg = ip.split('.');
+  if (seg.length === 4) return `${seg[0]}.${seg[1]}.${seg[2]}.*`;
+  return ip;
+}
 
 const trendEl = ref(null);
 const sourceEl = ref(null);
@@ -458,11 +477,18 @@ body {
 .list .val { color: var(--muted); font-variant-numeric: tabular-nums; }
 
 .recent { margin-top: 6px; font-size: 12px; }
-.recent .row { display: grid; grid-template-columns: 88px 1fr 82px 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px dashed #f1f3f2; color: #4b5563; }
+.recent .row { display: grid; grid-template-columns: 82px 108px 1fr 78px 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px dashed #f1f3f2; color: #4b5563; }
 .recent .row:last-child { border-bottom: none; }
 .recent .head-row { color: #9ca3af; font-size: 11px; }
 .recent .t { font-variant-numeric: tabular-nums; }
+.recent .ip { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; color: #374151; }
 .recent .trunc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.head-tools { display: flex; align-items: center; gap: 8px; }
+.mini {
+  border: 1px solid var(--line); background: #fff; color: #4b5563; border-radius: 8px;
+  padding: 3px 9px; font-size: 11px; cursor: pointer;
+}
+.mini:hover { border-color: #cbd5d1; color: var(--green); }
 .live { font-size: 11px; color: #3b6d11; background: #eaf3de; padding: 2px 8px; border-radius: 99px; }
 .empty { font-size: 13px; color: #9ca3af; margin: 16px 0; }
 .foot { text-align: center; font-size: 11px; color: #9ca3af; margin-top: 8px; line-height: 1.8; }
@@ -470,7 +496,8 @@ body {
 @media (max-width: 880px) {
   .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cols { grid-template-columns: 1fr; }
-  .recent .row { grid-template-columns: 76px 1fr 70px; }
-  .recent .row > span:last-child { display: none; }
+  .recent .row { grid-template-columns: 76px 96px 1fr; }
+  .recent .row > span:nth-child(4),
+  .recent .row > span:nth-child(5) { display: none; }
 }
 </style>

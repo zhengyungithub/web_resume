@@ -614,6 +614,8 @@
              class="hover:text-zen-green-300 transition-colors">
             粤ICP备2026164325号-1
           </a>
+          <span class="mx-2 opacity-50">·</span>
+          <span>本站使用自建访问统计，仅记录设备与来源信息用于优化体验</span>
         </p>
       </div>
     </section>
