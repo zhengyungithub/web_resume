@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import contactHandler from './api/contact.js';
 import { createChatRouter } from './api/chat.js';
 import { createVisitRouter } from './api/visit.js';
+import { createStatsRouter } from './api/analytics/routes.js';
 
 dotenv.config();
 
@@ -75,6 +76,9 @@ const chatRouter = createChatRouter();
 app.use('/api', chatRouter);
 
 app.use('/api/visit', createVisitRouter());
+
+// 访问数据看板（stats.zhengyun.online 专用，单密码保护）
+app.use('/api/stats', createStatsRouter());
 
 // 未匹配的 API 一律返回 JSON，别掉进前端 index.html
 app.use('/api', (req, res) => {
