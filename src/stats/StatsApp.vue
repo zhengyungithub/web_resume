@@ -27,9 +27,15 @@
         </div>
         <div class="head-actions">
           <div class="seg">
-            <button v-for="r in [7, 30, 90]" :key="r" :class="{ on: range === r }" @click="setRange(r)">
+            <button v-for="r in [7, 30, 90]" :key="r" :class="{ on: !isCustom && range === r }" @click="setRange(r)">
               {{ r }} 天
             </button>
+          </div>
+          <div class="daterange">
+            <input v-model="customFrom" type="date" :max="todayStr" @keyup.enter="applyCustom" />
+            <span class="tilde">~</span>
+            <input v-model="customTo" type="date" :max="todayStr" @keyup.enter="applyCustom" />
+            <button class="apply" :disabled="!customFrom || !customTo || refreshing" @click="applyCustom">查询</button>
           </div>
           <button class="ghost" :disabled="refreshing" @click="refresh">{{ refreshing ? '刷新中…' : '刷新' }}</button>
           <button class="ghost" @click="logout">退出</button>
@@ -51,7 +57,7 @@
           <p class="hint">按 IP+浏览器去重</p>
         </div>
         <div class="card">
-          <p class="label">近 {{ range }} 天</p>
+          <p class="label">{{ rangeLabel }}</p>
           <p class="num">{{ cards.rangePv }}<span class="unit">PV</span></p>
           <p class="hint">{{ cards.rangeUv }} 位访客</p>
         </div>
@@ -163,6 +169,26 @@ const error = ref('');
 const range = ref(30);
 const data = ref(null);
 const showFullIp = ref(false);
+const isCustom = ref(false);
+const customFrom = ref('');
+const customTo = ref('');
+
+const todayStr = new Date(Date.now() + 8 * 3600_000).toISOString().slice(0, 10);
+const rangeLabel = computed(() =>
+  isCustom.value && customFrom.value && customTo.value
+    ? `${customFrom.value.slice(5)} ~ ${customTo.value.slice(5)}`
+    : `近 ${range.value} 天`
+);
+
+async function applyCustom() {
+  if (!customFrom.value || !customTo.value) return;
+  let [a, b] = [customFrom.value, customTo.value];
+  if (a > b) [a, b] = [b, a];
+  customFrom.value = a;
+  customTo.value = b;
+  isCustom.value = true;
+  await load();
+}
 
 // 默认掩码：IPv4 隐藏最后一段，IPv6 隐藏后 4 组
 function maskIp(ip) {
@@ -234,9 +260,15 @@ async function logout() {
   data.value = null;
 }
 
+function rangeQuery() {
+  return isCustom.value
+    ? `from=${customFrom.value}&to=${customTo.value}`
+    : `days=${range.value}`;
+}
+
 async function load() {
   try {
-    data.value = await api(`/summary?days=${range.value}`);
+    data.value = await api(`/summary?${rangeQuery()}`);
     await nextTick();
     render();
   } catch (e) {
@@ -250,7 +282,7 @@ async function refresh() {
   error.value = '';
   try {
     await api('/collect', { method: 'POST' });
-    data.value = await api(`/summary?days=${range.value}`);
+    data.value = await api(`/summary?${rangeQuery()}`);
     await nextTick();
     render();
   } catch (e) {
@@ -261,6 +293,7 @@ async function refresh() {
 }
 
 function setRange(r) {
+  isCustom.value = false;
   range.value = r;
   load();
 }
@@ -441,6 +474,20 @@ body {
   border: none; background: transparent; padding: 7px 14px; font-size: 13px; cursor: pointer; color: var(--muted);
 }
 .seg button.on { background: var(--green); color: #fff; }
+.daterange {
+  display: flex; align-items: center; gap: 6px; background: #fff;
+  border: 1px solid var(--line); border-radius: 10px; padding: 4px 10px;
+}
+.daterange input {
+  border: none; outline: none; font-size: 12px; color: #374151;
+  background: transparent; width: 116px; font-family: inherit;
+}
+.daterange .tilde { color: #9ca3af; font-size: 12px; }
+.daterange .apply {
+  border: none; background: var(--green); color: #fff; border-radius: 7px;
+  padding: 4px 12px; font-size: 12px; cursor: pointer;
+}
+.daterange .apply:disabled { opacity: .45; cursor: default; }
 .ghost {
   border: 1px solid var(--line); background: #fff; color: #374151; border-radius: 10px;
   padding: 7px 14px; font-size: 13px; cursor: pointer;

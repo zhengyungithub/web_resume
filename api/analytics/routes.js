@@ -90,9 +90,10 @@ export function createStatsRouter() {
   });
 
   router.get('/summary', requireAuth, (req, res) => {
-    const days = Math.min(90, Math.max(1, Number(req.query.days) || 30));
     try {
-      res.json(summary(days));
+      const { from, to } = req.query;
+      const days = Math.min(90, Math.max(1, Number(req.query.days) || 30));
+      res.json(summary({ days, from: String(from || ''), to: String(to || '') }));
     } catch (e) {
       console.error('[stats] 查询失败：', e);
       res.status(500).json({ error: '数据读取失败' });

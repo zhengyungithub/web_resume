@@ -186,11 +186,20 @@ function pruneDays(db) {
   }
 }
 
-const todayStr = () => new Date().toISOString().slice(0, 10);
+const todayStr = () => new Date(Date.now() + CST_OFFSET).toISOString().slice(0, 10);
+
+// 统计口径统一为北京时间（日志里的时间是 +0800，parseLine 直接取其日期部分）
+const CST_OFFSET = 8 * 3600_000;
 
 function shiftDay(days) {
-  return new Date(Date.now() - days * 86400_000).toISOString().slice(0, 10);
+  return new Date(Date.now() + CST_OFFSET - days * 86400_000).toISOString().slice(0, 10);
 }
+
+function nextDay(s) {
+  return new Date(new Date(`${s}T00:00:00Z`).getTime() + 86400_000).toISOString().slice(0, 10);
+}
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 function sumMaps(target, src) {
   for (const [k, v] of Object.entries(src || {})) target[k] = (target[k] || 0) + v;
@@ -206,15 +215,30 @@ function topN(map, n = 8) {
 
 /**
  * 看板查询：一次返回概览 + 区间聚合，前端只发一个请求
+ * 支持两种范围：days（最近 N 天）或 from+to（自定义日期段，含首尾）
  */
-export function summary(rangeDays = 30) {
+export function summary({ days = 30, from, to } = {}) {
   const db = loadDb();
-  const from = shiftDay(rangeDays - 1);
+  const today = todayStr();
   const dates = Object.keys(db.days).sort();
 
+  let start;
+  let end;
+  let custom = false;
+  if (DATE_RE.test(from || '') && DATE_RE.test(to || '')) {
+    custom = true;
+    start = from <= to ? from : to;
+    end = from <= to ? to : from;
+    if (end > today) end = today;
+    if (start < shiftDay(89)) start = shiftDay(89); // 明细只保留 90 天
+    if (start > end) start = end;
+  } else {
+    start = shiftDay(Math.min(90, Math.max(1, days)) - 1);
+    end = today;
+  }
+
   const trend = [];
-  for (let i = rangeDays - 1; i >= 0; i--) {
-    const d = shiftDay(i);
+  for (let d = start; d <= end; d = nextDay(d)) {
     const day = db.days[d];
     trend.push({ date: d, pv: day?.pv || 0, uv: day?.uv?.length || 0 });
   }
@@ -223,22 +247,24 @@ export function summary(rangeDays = 30) {
   let rangePv = 0;
   const rangeUvSet = new Set();
   for (const [d, day] of Object.entries(db.days)) {
-    if (d < from) continue;
+    if (d < start || d > end) continue;
     rangePv += day.pv || 0;
     for (const h of day.uv || []) rangeUvSet.add(h);
     for (const k of Object.keys(agg)) sumMaps(agg[k], day[k]);
   }
 
-  const today = db.days[todayStr()] || dayBucket();
+  const todayBucket = db.days[today] || dayBucket();
   const yest = db.days[shiftDay(1)] || dayBucket();
 
   return {
     generatedAt: new Date().toISOString(),
-    range: rangeDays,
+    range: custom ? `${start}~${end}` : Number(days),
+    rangeStart: start,
+    rangeEnd: end,
     coverage: { firstDay: dates[0] || null, lastDay: dates[dates.length - 1] || null },
     cards: {
-      todayPv: today.pv,
-      todayUv: today.uv.length,
+      todayPv: todayBucket.pv,
+      todayUv: todayBucket.uv.length,
       yesterdayPv: yest.pv,
       rangePv,
       rangeUv: rangeUvSet.size,
