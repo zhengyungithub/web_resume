@@ -104,6 +104,10 @@
 
       <div class="cols">
         <section class="panel">
+          <div class="panel-head"><h2>地域分布</h2></div>
+          <div ref="geoEl" class="chart" :style="{ height: geoChartHeight }"></div>
+        </section>
+        <section class="panel">
           <div class="panel-head"><h2>外部来源域名</h2></div>
           <ul v-if="data?.referers?.length" class="list">
             <li v-for="r in data.referers" :key="r.name">
@@ -112,34 +116,41 @@
           </ul>
           <p v-else class="empty">暂无外部链接来源</p>
         </section>
-        <section class="panel">
-          <div class="panel-head">
-            <h2>实时访客</h2>
-            <div class="head-tools">
-              <span class="live">最近 20 条</span>
-              <button class="mini" @click="showFullIp = !showFullIp">
-                {{ showFullIp ? '隐藏 IP' : '显示完整 IP' }}
-              </button>
-            </div>
-          </div>
-          <div v-if="data?.recent?.length" class="recent">
-            <div class="row head-row">
-              <span>时间</span><span>来源 IP</span><span>页面</span><span>来源</span><span>设备</span>
-            </div>
-            <div v-for="(v, i) in data.recent" :key="i" class="row">
-              <span class="t">{{ (v.t || '').slice(5) }}</span>
-              <span class="ip">{{ showFullIp ? (v.ip || '—') : maskIp(v.ip) }}</span>
-              <span class="trunc">{{ v.page }}</span>
-              <span>{{ v.source }}</span>
-              <span class="trunc">{{ v.device }} · {{ v.browser }}</span>
-            </div>
-          </div>
-          <p v-else class="empty">还没有访客记录（日志采集每 10 分钟一次）</p>
-        </section>
       </div>
 
+      <section class="panel">
+        <div class="panel-head">
+          <h2>实时访客</h2>
+          <div class="head-tools">
+            <span class="live">共 {{ recentTotal }} 条 · 每页 {{ pageSize }} 条</span>
+            <button class="mini" @click="showFullIp = !showFullIp">
+              {{ showFullIp ? '隐藏 IP' : '显示完整 IP' }}
+            </button>
+          </div>
+        </div>
+        <div v-if="recentTotal" class="recent" ref="recentEl">
+          <div class="row head-row">
+            <span>时间</span><span>来源 IP</span><span>地区</span><span>页面</span><span>来源</span><span>设备</span>
+          </div>
+          <div v-for="(v, i) in pagedRecent" :key="recentPage + '-' + i" class="row">
+            <span class="t">{{ (v.t || '').slice(5) }}</span>
+            <span class="ip">{{ showFullIp ? (v.ip || '—') : maskIp(v.ip) }}</span>
+            <span class="prov">{{ v.province || '—' }}</span>
+            <span class="trunc">{{ v.page }}</span>
+            <span>{{ v.source }}</span>
+            <span class="trunc">{{ v.device }} · {{ v.browser }}</span>
+          </div>
+        </div>
+        <p v-else class="empty">还没有访客记录（日志采集每 10 分钟一次）</p>
+        <div v-if="recentPages > 1" class="pager">
+          <button class="mini" :disabled="recentPage <= 1" @click="goPage(recentPage - 1)">‹ 上一页</button>
+          <span class="pageinfo">第 {{ recentPage }} / {{ recentPages }} 页</span>
+          <button class="mini" :disabled="recentPage >= recentPages" @click="goPage(recentPage + 1)">下一页 ›</button>
+        </div>
+      </section>
+
       <footer class="foot">
-        数据每 10 分钟从访问日志增量汇总一次 · 完整 IP 仅保留最近 200 条实时记录，用于识别回访与安全分析
+        数据每 10 分钟从访问日志增量汇总一次 · 完整 IP 仅保留最近 500 条实时记录，用于识别回访与安全分析
       </footer>
     </div>
   </div>
@@ -207,7 +218,26 @@ const sourceEl = ref(null);
 const deviceEl = ref(null);
 const pageEl = ref(null);
 const browserEl = ref(null);
+const geoEl = ref(null);
+const recentEl = ref(null);
 const charts = {};
+
+// ── 实时访客：分页 + 滚动 ──
+const pageSize = 20;
+const recentPage = ref(1);
+const recentTotal = computed(() => data.value?.recent?.length || 0);
+const recentPages = computed(() => Math.max(1, Math.ceil(recentTotal.value / pageSize)));
+const pagedRecent = computed(() => {
+  const start = (recentPage.value - 1) * pageSize;
+  return (data.value?.recent || []).slice(start, start + pageSize);
+});
+
+function goPage(p) {
+  recentPage.value = Math.min(recentPages.value, Math.max(1, p));
+  nextTick(() => recentEl.value?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+}
+
+const geoChartHeight = computed(() => `${Math.max(180, (data.value?.geo?.length || 1) * 32 + 40)}px`);
 
 const cards = computed(() => data.value?.cards || {});
 const deltaText = computed(() => {
@@ -269,6 +299,7 @@ function rangeQuery() {
 async function load() {
   try {
     data.value = await api(`/summary?${rangeQuery()}`);
+    recentPage.value = 1;
     await nextTick();
     render();
   } catch (e) {
@@ -397,6 +428,7 @@ function render() {
 
   hbar(pageEl.value, 'page', d.pages, GREEN);
   hbar(browserEl.value, 'browser', d.browsers, BLUE);
+  hbar(geoEl.value, 'geo', d.geo, AMBER);
 }
 
 const onResize = () => Object.values(charts).forEach((c) => c.resize());
@@ -523,13 +555,16 @@ body {
 .list .name { color: #374151; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .list .val { color: var(--muted); font-variant-numeric: tabular-nums; }
 
-.recent { margin-top: 6px; font-size: 12px; }
-.recent .row { display: grid; grid-template-columns: 82px 108px 1fr 78px 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px dashed #f1f3f2; color: #4b5563; }
+.recent { margin-top: 6px; font-size: 12px; max-height: 480px; overflow-y: auto; }
+.recent .row { display: grid; grid-template-columns: 82px 108px 74px 1fr 78px 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px dashed #f1f3f2; color: #4b5563; }
 .recent .row:last-child { border-bottom: none; }
-.recent .head-row { color: #9ca3af; font-size: 11px; }
+.recent .head-row { color: #9ca3af; font-size: 11px; position: sticky; top: 0; background: #fff; }
 .recent .t { font-variant-numeric: tabular-nums; }
 .recent .ip { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; color: #374151; }
+.recent .prov { color: var(--green); font-weight: 500; }
 .recent .trunc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pager { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 10px; }
+.pageinfo { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .head-tools { display: flex; align-items: center; gap: 8px; }
 .mini {
   border: 1px solid var(--line); background: #fff; color: #4b5563; border-radius: 8px;
@@ -543,8 +578,8 @@ body {
 @media (max-width: 880px) {
   .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cols { grid-template-columns: 1fr; }
-  .recent .row { grid-template-columns: 76px 96px 1fr; }
-  .recent .row > span:nth-child(4),
-  .recent .row > span:nth-child(5) { display: none; }
+  .recent .row { grid-template-columns: 76px 96px 60px 1fr; }
+  .recent .row > span:nth-child(5),
+  .recent .row > span:nth-child(6) { display: none; }
 }
 </style>

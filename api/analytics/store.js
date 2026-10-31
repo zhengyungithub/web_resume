@@ -11,6 +11,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseLine } from './parser.js';
+import { initGeo, provinceOf } from './geo.js';
+
+// 加载离线 IP 库（data/ip2region.xdb），失败也不影响采集，省份归「未知」
+initGeo();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = process.env.ANALYTICS_DATA_DIR || path.join(__dirname, '..', '..', 'data');
@@ -25,7 +29,7 @@ const LOG_CANDIDATES = [
 ].filter(Boolean);
 
 const KEEP_DAYS = 90;
-const KEEP_RECENT = 200;
+const KEEP_RECENT = 500;
 
 const emptyDb = () => ({
   version: 1,
@@ -62,7 +66,8 @@ const dayBucket = () => ({
   browsers: {},
   os: {},
   pages: {},
-  referers: {}
+  referers: {},
+  geo: {}
 });
 
 const bump = (obj, key, n = 1) => {
@@ -159,10 +164,12 @@ export function collect() {
     bump(day.os, rec.os);
     bump(day.pages, rec.page);
     if (rec.source === '外部链接' && rec.refererHost) bump(day.referers, rec.refererHost);
+    bump(day.geo, provinceOf(rec.ip));
 
     db.recent.push({
       t: `${rec.date} ${rec.time}`,
       ip: rec.ip || '',
+      province: provinceOf(rec.ip),
       page: rec.page,
       source: rec.source,
       device: rec.device,
@@ -243,7 +250,7 @@ export function summary({ days = 30, from, to } = {}) {
     trend.push({ date: d, pv: day?.pv || 0, uv: day?.uv?.length || 0 });
   }
 
-  const agg = { sources: {}, devices: {}, browsers: {}, os: {}, pages: {}, referers: {} };
+  const agg = { sources: {}, devices: {}, browsers: {}, os: {}, pages: {}, referers: {}, geo: {} };
   let rangePv = 0;
   const rangeUvSet = new Set();
   for (const [d, day] of Object.entries(db.days)) {
@@ -279,6 +286,7 @@ export function summary({ days = 30, from, to } = {}) {
     os: topN(agg.os, 6),
     pages: topN(agg.pages, 10),
     referers: topN(agg.referers, 8),
-    recent: db.recent.slice(-20).reverse()
+    geo: topN(agg.geo, 10),
+    recent: db.recent.slice(-KEEP_RECENT).reverse()
   };
 }
